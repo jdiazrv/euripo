@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Apertura del Puente de Euripo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        input, button, select {
+            margin: 10px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .note {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #f9f9f9;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="title">Calculadora de Apertura del Puente de Euripo</h1>
+    <label for="language">Idioma / Language:</label>
+    <select id="language" onchange="changeLanguage()">
+        <option value="es">Español</option>
+        <option value="en">English</option>
+    </select>
+    <br>
+    <label for="dateInput" id="dateLabel">Introduce la fecha (dd/mm/yyyy):</label>
+    <input type="text" id="dateInput" placeholder="dd/mm/yyyy">
+    <button onclick="calculate()">Calcular</button>
+    <div id="note" class="note">
+        Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida.
+    </div>
+    <div id="result"></div>
+
+    <script>
+        // Tabla de intervalos proporcionada
+        const bridgeIntervals = [
+            ["02:30-08:48", "08:50-14:43", "14:45-21:04", "21:06-02:58"], // Día 0 (Luna Nueva)
+            ["03:00-09:18", "09:20-15:13", "15:15-21:34", "21:36-03:28"], // Día 1
+            ["03:30-09:48", "09:50-15:43", "15:45-22:04", "22:06-02:58"], // Día 2
+            ["04:00-10:18", "10:20-16:13", "16:15-22:34", "22:36-04:28"], // Día 3
+            ["04:30-10:48", "10:50-16:43", "16:45-23:04", "23:06-04:58"], // Día 4
+            ["05:00-11:18", "11:20-17:13", "17:15-23:34", "23:36-05:28"], // Día 5
+            ["05:30-11:48", "11:50-16:43", "16:45-00:04", "00:06-05:58"], // Día 6
+            null, // Día 7 (Irregular stream)
+            null, // Día 8 (No proporcionado, asumo irregular)
+            null, // Día 9 (No proporcionado, asumo irregular)
+            ["00:01-06:18", "06:20-12:13", "12:15-18:34", "18:36-00:28"], // Día 10
+            ["00:30-06:48", "06:50-12:43", "12:45-19:04", "19:06-00:58"], // Día 11
+            ["01:00-07:18", "07:20-13:13", "13:15-19:34", "19:36-01:28"], // Día 12
+            ["01:30-07:48", "07:50-13:43", "13:45-20:04", "20:06-01:58"], // Día 13
+            ["02:00-08:18", "08:20-14:13", "14:15-20:34", "20:36-02:28"], // Día 14
+            ["02:30-08:48", "08:50-14:43", "14:45-21:04", "21:06-02:58"], // Día 15 (Luna Llena)
+            ["03:00-09:18", "09:20-15:13", "15:15-21:34", "21:36-03:28"], // Día 16
+            ["03:30-09:48", "09:50-15:43", "15:45-22:04", "22:06-03:58"], // Día 17
+            ["04:00-10:18", "10:20-16:13", "16:15-22:34", "22:36-04:28"], // Día 18
+            ["04:30-10:48", "10:50-16:43", "16:45-23:04", "23:06-04:58"], // Día 19
+            ["05:00-11:18", "11:20-17:13", "17:15-23:34", "23:36-05:28"], // Día 20
+            ["05:30-11:48", "11:50-17:43", "17:45-00:04", "00:06-05:58"], // Día 21
+            null, // Día 22 (Irregular stream)
+            null, // Día 23 (No proporcionado, asumo irregular)
+            null, // Día 24 (No proporcionado, asumo irregular)
+            ["00:01-06:18", "06:20-12:13", "12:15-18:34", "18:36-00:28"], // Día 25
+            ["00:30-06:48", "06:50-12:43", "12:45-19:04", "19:06-00:58"], // Día 26
+            ["01:00-07:18", "07:20-13:13", "13:15-19:34", "19:36-01:28"], // Día 27
+            ["01:30-07:48", "07:50-13:43", "13:45-20:04", "20:06-01:58"], // Día 28
+            ["02:00-08:18", "08:20-14:13", "14:15-20:34", "20:36-02:28"]  // Día 29
+        ];
+
+        // Función para validar y parsear fecha en formato dd/mm/yyyy
+        function parseDate(input) {
+            const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+            const match = input.match(regex);
+            if (!match) {
+                return null;
+            }
+            const day = parseInt(match[1], 10);
+            const month = parseInt(match[2], 10) - 1; // Meses en JavaScript son 0-11
+            const year = parseInt(match[3], 10);
+            const date = new Date(year, month, day);
+            if (isNaN(date) || date.getDate() !== day || date.getMonth() !== month || date.getFullYear() !== year) {
+                return null;
+            }
+            return date;
+        }
+
+        // Función para verificar si la fecha está en horario de verano (EEST)
+        function isDST(date) {
+            const year = date.getFullYear();
+            const lastSundayMarch = new Date(year, 2, 31);
+            lastSundayMarch.setDate(31 - (lastSundayMarch.getDay() || 7));
+            const dstStart = new Date(Date.UTC(year, 2, lastSundayMarch.getDate(), 1));
+
+            const lastSundayOctober = new Date(year, 9, 31);
+            lastSundayOctober.setDate(31 - (lastSundayOctober.getDay() || 7));
+            const dstEnd = new Date(Date.UTC(year, 9, lastSundayOctober.getDate(), 1));
+
+            return date >= dstStart && date < dstEnd;
+        }
+
+        // Datos de fases lunares proporcionados (tiempos locales EET/EEST)
+        const newMoons = [
+          { date: new Date('2025-01-29T14:35:00'), type: 'new' },
+          { date: new Date('2025-02-28T02:44:00'), type: 'new' },
+          { date: new Date('2025-03-29T12:57:00'), type: 'new' },
+          { date: new Date('2025-04-27T22:31:00'), type: 'new' },
+          { date: new Date('2025-05-27T06:02:00'), type: 'new' },
+          { date: new Date('2025-06-25T13:31:00'), type: 'new' },
+          { date: new Date('2025-07-24T22:11:00'), type: 'new' },
+          { date: new Date('2025-08-23T09:06:00'), type: 'new' },
+          { date: new Date('2025-09-21T22:54:00'), type: 'new' },
+          { date: new Date('2025-10-21T15:25:00'), type: 'new' },
+          { date: new Date('2025-11-20T08:47:00'), type: 'new' },
+          { date: new Date('2025-12-20T03:43:00'), type: 'new' },
+          { date: new Date('2026-01-18T21:51:00'), type: 'new' },
+          { date: new Date('2026-02-17T14:01:00'), type: 'new' },
+          { date: new Date('2026-03-19T03:23:00'), type: 'new' },
+          { date: new Date('2026-04-17T14:51:00'), type: 'new' },
+          { date: new Date('2026-05-16T23:01:00'), type: 'new' },
+          { date: new Date('2026-06-15T05:54:00'), type: 'new' },
+          { date: new Date('2026-07-14T12:43:00'), type: 'new' },
+          { date: new Date('2026-08-12T20:36:00'), type: 'new' },
+          { date: new Date('2026-09-11T06:26:00'), type: 'new' },
+          { date: new Date('2026-10-10T18:50:00'), type: 'new' },
+          { date: new Date('2026-11-09T09:02:00'), type: 'new' },
+          { date: new Date('2026-12-09T02:51:00'), type: 'new' },
+          { date: new Date('2027-01-07T22:24:00'), type: 'new' },
+          { date: new Date('2027-02-06T17:56:00'), type: 'new' },
+          { date: new Date('2027-03-08T11:29:00'), type: 'new' },
+          { date: new Date('2027-04-07T02:51:00'), type: 'new' },
+          { date: new Date('2027-05-06T13:58:00'), type: 'new' },
+          { date: new Date('2027-06-04T22:40:00'), type: 'new' },
+          { date: new Date('2027-07-04T06:02:00'), type: 'new' },
+          { date: new Date('2027-08-02T13:05:00'), type: 'new' },
+          { date: new Date('2027-08-31T20:41:00'), type: 'new' },
+          { date: new Date('2027-09-30T05:36:00'), type: 'new' },
+          { date: new Date('2027-10-29T16:36:00'), type: 'new' },
+          { date: new Date('2027-11-28T05:24:00'), type: 'new' },
+          { date: new Date('2027-12-27T22:12:00'), type: 'new' },
+          { date: new Date('2028-01-26T17:12:00'), type: 'new' },
+          { date: new Date('2028-02-25T12:37:00'), type: 'new' },
+          { date: new Date('2028-03-26T07:31:00'), type: 'new' },
+          { date: new Date('2028-04-24T22:46:00'), type: 'new' },
+          { date: new Date('2028-05-24T11:16:00'), type: 'new' },
+          { date: new Date('2028-06-22T21:27:00'), type: 'new' },
+          { date: new Date('2028-07-22T06:01:00'), type: 'new' },
+          { date: new Date('2028-08-20T13:43:00'), type: 'new' },
+          { date: new Date('2028-09-18T21:23:00'), type: 'new' },
+          { date: new Date('2028-10-18T05:56:00'), type: 'new' },
+          { date: new Date('2028-11-16T15:18:00'), type: 'new' },
+          { date: new Date('2028-12-16T04:06:00'), type: 'new' },
+          { date: new Date('2029-01-14T19:24:00'), type: 'new' },
+          { date: new Date('2029-02-13T12:31:00'), type: 'new' },
+          { date: new Date('2029-03-15T06:19:00'), type: 'new' },
+          { date: new Date('2029-04-14T00:40:00'), type: 'new' },
+          { date: new Date('2029-05-13T16:42:00'), type: 'new' },
+          { date: new Date('2029-06-12T06:50:00'), type: 'new' },
+          { date: new Date('2029-07-11T18:51:00'), type: 'new' },
+          { date: new Date('2029-08-10T04:55:00'), type: 'new' },
+          { date: new Date('2029-09-08T13:44:00'), type: 'new' },
+          { date: new Date('2029-10-07T22:14:00'), type: 'new' },
+          { date: new Date('2029-11-06T06:24:00'), type: 'new' },
+          { date: new Date('2029-12-05T16:52:00'), type: 'new' },
+          { date: new Date('2030-01-04T04:49:00'), type: 'new' },
+          { date: new Date('2030-02-02T18:07:00'), type: 'new' },
+          { date: new Date('2030-03-04T08:34:00'), type: 'new' },
+          { date: new Date('2030-04-03T01:02:00'), type: 'new' },
+          { date: new Date('2030-05-02T17:12:00'), type: 'new' },
+          { date: new Date('2030-06-01T09:21:00'), type: 'new' },
+          { date: new Date('2030-07-01T00:34:00'), type: 'new' },
+          { date: new Date('2030-07-30T14:10:00'), type: 'new' },
+          { date: new Date('2030-08-29T02:07:00'), type: 'new' },
+          { date: new Date('2030-09-27T12:54:00'), type: 'new' },
+          { date: new Date('2030-10-26T23:17:00'), type: 'new' },
+          { date: new Date('2030-11-25T08:46:00'), type: 'new' },
+          { date: new Date('2030-12-24T19:32:00'), type: 'new' }
+        ];
+
+        const fullMoons = [
+          { date: new Date('2025-02-12T15:53:00'), type: 'full' },
+          { date: new Date('2025-03-14T08:54:00'), type: 'full' },
+          { date: new Date('2025-04-13T03:22:00'), type: 'full' },
+          { date: new Date('2025-05-12T19:55:00'), type: 'full' },
+          { date: new Date('2025-06-11T10:43:00'), type: 'full' },
+          { date: new Date('2025-07-10T23:36:00'), type: 'full' },
+          { date: new Date('2025-08-09T10:54:00'), type: 'full' },
+          { date: new Date('2025-09-07T21:08:00'), type: 'full' },
+          { date: new Date('2025-10-07T06:47:00'), type: 'full' },
+          { date: new Date('2025-11-05T15:19:00'), type: 'full' },
+          { date: new Date('2025-12-05T01:14:00'), type: 'full' },
+          { date: new Date('2026-01-03T12:02:00'), type: 'full' },
+          { date: new Date('2026-02-02T00:09:00'), type: 'full' },
+          { date: new Date('2026-03-03T13:37:00'), type: 'full' },
+          { date: new Date('2026-04-02T05:11:00'), type: 'full' },
+          { date: new Date('2026-05-01T20:23:00'), type: 'full' },
+          { date: new Date('2026-05-31T11:45:00'), type: 'full' },
+          { date: new Date('2026-06-30T02:56:00'), type: 'full' },
+          { date: new Date('2026-07-29T17:35:00'), type: 'full' },
+          { date: new Date('2026-08-28T07:18:00'), type: 'full' },
+          { date: new Date('2026-09-26T19:49:00'), type: 'full' },
+          { date: new Date('2026-10-26T06:11:00'), type: 'full' },
+          { date: new Date('2026-11-24T16:53:00'), type: 'full' },
+          { date: new Date('2026-12-24T03:28:00'), type: 'full' },
+          { date: new Date('2027-01-22T14:17:00'), type: 'full' },
+          { date: new Date('2027-02-21T01:23:00'), type: 'full' },
+          { date: new Date('2027-03-22T12:43:00'), type: 'full' },
+          { date: new Date('2027-04-21T01:27:00'), type: 'full' },
+          { date: new Date('2027-05-20T13:59:00'), type: 'full' },
+          { date: new Date('2027-06-19T03:44:00'), type: 'full' },
+          { date: new Date('2027-07-18T18:44:00'), type: 'full' },
+          { date: new Date('2027-08-17T10:28:00'), type: 'full' },
+          { date: new Date('2027-09-16T02:03:00'), type: 'full' },
+          { date: new Date('2027-10-15T16:47:00'), type: 'full' },
+          { date: new Date('2027-11-14T05:25:00'), type: 'full' },
+          { date: new Date('2027-12-13T18:08:00'), type: 'full' },
+          { date: new Date('2028-01-12T06:02:00'), type: 'full' },
+          { date: new Date('2028-02-10T17:03:00'), type: 'full' },
+          { date: new Date('2028-03-11T03:06:00'), type: 'full' },
+          { date: new Date('2028-04-09T13:26:00'), type: 'full' },
+          { date: new Date('2028-05-08T22:48:00'), type: 'full' },
+          { date: new Date('2028-06-07T09:08:00'), type: 'full' },
+          { date: new Date('2028-07-06T21:10:00'), type: 'full' },
+          { date: new Date('2028-08-05T11:09:00'), type: 'full' },
+          { date: new Date('2028-09-04T02:47:00'), type: 'full' },
+          { date: new Date('2028-10-03T19:25:00'), type: 'full' },
+          { date: new Date('2028-11-02T11:17:00'), type: 'full' },
+          { date: new Date('2028-12-02T03:40:00'), type: 'full' },
+          { date: new Date('2028-12-31T18:48:00'), type: 'full' },
+          { date: new Date('2029-01-30T08:03:00'), type: 'full' },
+          { date: new Date('2029-02-28T19:10:00'), type: 'full' },
+          { date: new Date('2029-03-30T05:26:00'), type: 'full' },
+          { date: new Date('2029-04-28T13:36:00'), type: 'full' },
+          { date: new Date('2029-05-27T21:37:00'), type: 'full' },
+          { date: new Date('2029-06-26T06:22:00'), type: 'full' },
+          { date: new Date('2029-07-25T16:35:00'), type: 'full' },
+          { date: new Date('2029-08-24T04:51:00'), type: 'full' },
+          { date: new Date('2029-09-22T19:29:00'), type: 'full' },
+          { date: new Date('2029-10-22T12:27:00'), type: 'full' },
+          { date: new Date('2029-11-21T06:03:00'), type: 'full' },
+          { date: new Date('2029-12-21T00:46:00'), type: 'full' },
+          { date: new Date('2030-01-19T17:54:00'), type: 'full' },
+          { date: new Date('2030-02-18T08:19:00'), type: 'full' },
+          { date: new Date('2030-03-19T19:56:00'), type: 'full' },
+          { date: new Date('2030-04-18T06:20:00'), type: 'full' },
+          { date: new Date('2030-05-17T14:18:00'), type: 'full' },
+          { date: new Date('2030-06-15T21:41:00'), type: 'full' },
+          { date: new Date('2030-07-15T05:12:00'), type: 'full' },
+          { date: new Date('2030-08-13T13:44:00'), type: 'full' },
+          { date: new Date('2030-09-12T00:17:00'), type: 'full' },
+          { date: new Date('2030-10-11T13:46:00'), type: 'full' },
+          { date: new Date('2030-11-10T05:30:00'), type: 'full' },
+          { date: new Date('2030-12-10T00:40:00'), type: 'full' }
+        ];
+
+        // Función para obtener la fase lunar más cercana
+        function getLunarPhaseInfo(inputDate) {
+            const date = parseDate(inputDate);
+            if (!date) {
+                return "Formato de fecha inválido. Usa dd/mm/yyyy (ejemplo: 12/06/2025).";
+            }
+            date.setHours(0, 0, 0, 0); // Establecer a medianoche UTC
+
+            // Encontrar la última luna nueva y luna llena
+            let lastNewMoon = null;
+            let lastFullMoon = null;
+            let nextFullMoon = null;
+            for (let phase of [...newMoons, ...fullMoons]) {
+                if (phase.type === 'new' && phase.date <= date) {
+                    lastNewMoon = phase.date;
+                }
+                if (phase.type === 'full' && phase.date <= date) {
+                    lastFullMoon = phase.date;
+                } else if (phase.type === 'full' && phase.date > date && !nextFullMoon) {
+                    nextFullMoon = phase.date;
+                }
+            }
+            if (!lastNewMoon || !lastFullMoon || !nextFullMoon) {
+                return "No hay datos de fases lunares para esta fecha.";
+            }
+
+            // Calcular días desde la última luna nueva
+            const daysSinceNewMoon = Math.round((date - lastNewMoon) / (1000 * 60 * 60 * 24));
+
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            return {
+                lastNewMoon: lastNewMoon.toLocaleString('es-ES', options),
+                lastFullMoon: lastFullMoon.toLocaleString('es-ES', options),
+                nextFullMoon: nextFullMoon.toLocaleString('es-ES', options),
+                daysSinceNewMoon: daysSinceNewMoon,
+                isDST: isDST(date)
+            };
+        }
+
+        // Función para obtener la hora de apertura del puente
+        function getBridgeOpeningTime(daysSinceNewMoon, referenceTime = "21:30", isDST = false) {
+            if (daysSinceNewMoon < 0 || daysSinceNewMoon > 29 || !bridgeIntervals[Math.min(29, Math.max(0, daysSinceNewMoon))]) {
+                return "Corriente irregular o sin datos para este día en el ciclo lunar";
+            }
+
+            const intervals = bridgeIntervals[Math.min(29, Math.max(0, daysSinceNewMoon))];
+            const [refHour, refMinute] = referenceTime.split(":").map(Number);
+            const refTimeMinutes = refHour * 60 + refMinute;
+
+            for (let interval of intervals) {
+                const [start, end] = interval.split("-");
+                const [startHour, startMinute] = start.split(":").map(Number);
+                const [endHour, endMinute] = end.split(":").map(Number);
+
+                const startMinutes = startHour * 60 + startMinute;
+                let endMinutes = endHour * 60 + endMinute;
+
+                if (endHour < startHour) {
+                    endMinutes += 24 * 60;
+                }
+
+                if (refTimeMinutes >= startMinutes && refTimeMinutes <= endMinutes) {
+                    let totalMinutes = endMinutes + 1;
+                    if (isDST) {
+                        totalMinutes += 60;
+                    }
+                    if (totalMinutes >= 24 * 60) {
+                        totalMinutes -= 24 * 60;
+                    }
+                    const hours = Math.floor(totalMinutes / 60).toString().padStart(2, "0");
+                    const minutes = (totalMinutes % 60).toString().padStart(2, "0");
+                    return `${hours}:${minutes}${isDST ? ' (EEST)' : ' (EET)'}`;
+                }
+            }
+
+            return "Hora de referencia no encontrada en ningún intervalo";
+        }
+
+        // Función combinada
+        function calculateBridgeOpening(inputDate) {
+            const lunarInfo = getLunarPhaseInfo(inputDate);
+            if (typeof lunarInfo === "string") {
+                return lunarInfo;
+            }
+
+            const openingTime = getBridgeOpeningTime(lunarInfo.daysSinceNewMoon, "21:30", lunarInfo.isDST);
+            return {
+                ...lunarInfo,
+                bridgeOpeningTime: openingTime
+            };
+        }
+
+        // Función para manejar el botón
+        function calculate() {
+            const dateInput = document.getElementById("dateInput").value;
+            const result = calculateBridgeOpening(dateInput);
+            const resultDiv = document.getElementById("result");
+            if (typeof result === "string") {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${result}</p>`;
+            } else {
+                resultDiv.innerHTML = `
+                    <p><strong>${langData[currentLang].lastNewMoon}:</strong> ${result.lastNewMoon}</p>
+                    <p><strong>${langData[currentLang].lastFullMoon}:</strong> ${result.lastFullMoon}</p>
+                    <p><strong>${langData[currentLang].nextFullMoon}:</strong> ${result.nextFullMoon}</p>
+                    <p><strong>${langData[currentLang].daysSinceNewMoon}:</strong> ${result.daysSinceNewMoon}</p>
+                    <p><strong>${langData[currentLang].bridgeOpeningTime}:</strong> ${result.bridgeOpeningTime}</p>
+                `;
+            }
+        }
+
+        // Datos de idioma
+        const langData = {
+            es: {
+                title: "Calculadora de Apertura del Puente de Euripo",
+                dateLabel: "Introduce la fecha (dd/mm/yyyy):",
+                calculate: "Calcular",
+                note: "Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida.",
+                lastNewMoon: "Última luna nueva",
+                lastFullMoon: "Última luna llena",
+                nextFullMoon: "Próxima luna llena",
+                daysSinceNewMoon: "Días desde la última luna nueva",
+                bridgeOpeningTime: "Hora de apertura del puente"
+            },
+            en: {
+                title: "Euripus Bridge Opening Calculator",
+                dateLabel: "Enter the date (dd/mm/yyyy):",
+                calculate: "Calculate",
+                note: "Note: The calculation determines the moment of no current starting from 21:30. The data is provided by the Port Authority of Chalkida.",
+                lastNewMoon: "Last New Moon",
+                lastFullMoon: "Last Full Moon",
+                nextFullMoon: "Next Full Moon",
+                daysSinceNewMoon: "Days since the last new moon",
+                bridgeOpeningTime: "Bridge opening time"
+            }
+        };
+
+        let currentLang = "es";
+
+        // Función para cambiar el idioma
+        function changeLanguage() {
+            const langSelect = document.getElementById("language");
+            currentLang = langSelect.value;
+            document.getElementById("title").textContent = langData[currentLang].title;
+            document.getElementById("dateLabel").textContent = langData[currentLang].dateLabel;
+            document.querySelector("button").textContent = langData[currentLang].calculate;
+            document.getElementById("note").textContent = langData[currentLang].note;
+            const resultDiv = document.getElementById("result");
+            if (resultDiv.innerHTML) {
+                const dateInput = document.getElementById("dateInput").value;
+                calculate(); // Recalcular para actualizar el resultado con el nuevo idioma
+            }
+        }
+    </script>
+</body>
+</html>
