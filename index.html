@@ -4,55 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Apertura del Puente de Euripo</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Inter', sans-serif;
-        }
-        .container {
-            max-width: 32rem;
-            margin: 2rem;
-        }
-        .card {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            transition: transform 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .btn {
-            background: #2563eb;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            transition: background 0.3s ease;
-        }
-        .btn:hover {
-            background: #1e40af;
-        }
-        .note {
-            background: #f0f9ff;
-            border-left: 4px solid #3b82f6;
-            padding: 1rem;
-            margin-top: 1rem;
-            border-radius: 0.5rem;
-        }
-        .error {
-            background: #fef2f2;
-            border-left: 4px solid #ef4444;
-            padding: 1rem;
-            margin-top: 1rem;
-            border-radius: 0.5rem;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -60,7 +12,7 @@
             <h1 id="title" class="text-2xl font-bold text-gray-800 mb-4">Calculadora de Apertura del Puente de Euripo</h1>
             <div class="mb-4">
                 <label for="language" class="block text-sm font-medium text-gray-700">Idioma / Language:</label>
-                <select id="language" onchange="changeLanguage()" class="mt-1 p-2 border rounded-md w-full">
+                <select id="language" class="mt-1 p-2 border rounded-md w-full">
                     <option value="es">Español</option>
                     <option value="en">English</option>
                 </select>
@@ -69,7 +21,7 @@
                 <label for="dateInput" id="dateLabel" class="block text-sm font-medium text-gray-700">Introduce la fecha (dd/mm/yyyy):</label>
                 <input type="text" id="dateInput" placeholder="dd/mm/yyyy" class="mt-1 p-2 border rounded-md w-full">
             </div>
-            <button onclick="calculate()" class="btn" id="calculateBtn">Calcular</button>
+            <button id="calculateBtn" class="btn">Calcular</button>
             <div id="note" class="note">
                 Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida. El cálculo no es una ciencia exacta y no garantiza que el puente abra a la hora indicada.
             </div>
@@ -177,27 +129,25 @@
         // Calcular apertura del puente
         function calculateBridgeOpening(inputDate) {
             const lunarInfo = getLunarPhaseInfo(inputDate);
-            if (typeof lunarInfo === "string") {
-                const isSaturday = lunarInfo.date.getDay() === 6;
-                const isWednesday = lunarInfo.date.getDate() === 3;
-                const isSummerWednesday = isWednesday && 
-                    lunarInfo.date.getMonth() >= 5 && lunarInfo.date.getMonth() <= 8;
-                
-                let result = {
-                    ...lunarInfo,
-                    bridgeOpeningTime: getBridgeOpeningTime(lunarInfo.daysSinceNewMoons, "21:30", lunarInfo.isDST)
-                };
-                
-                if (isSaturday) {
-                    result.message = langData[currentLang].saturdayWarning;
-                } else if (isSummerWednesday) {
-                    return langData[currentLang].summerWednesday;
-                }
-                
-                return result;
-            } else {
-                return lunarInfo;
+            if (typeof lunarInfo === "string") return lunarInfo;
+
+            const isSaturday = lunarInfo.inputDate.getDay() === 6;
+            const isWednesday = lunarInfo.inputDate.getDay() === 3;
+            const isSummerWednesday = isWednesday && 
+                lunarInfo.inputDate.getMonth() >= 5 && lunarInfo.inputDate.getMonth() <= 8;
+
+            let result = {
+                ...lunarInfo,
+                bridgeOpeningTime: getBridgeOpeningTime(lunarInfo.daysSinceNewMoon, "21:30", lunarInfo.isDST)
+            };
+
+            if (isSaturday) {
+                result.message = langData[currentLang].saturdayWarning;
+            } else if (isSummerWednesday) {
+                return langData[currentLang].summerWednesday;
             }
+
+            return result;
         }
 
         // Manejar botón de cálculo
@@ -206,7 +156,7 @@
             const result = calculateBridgeOpening(dateInput);
             const resultDiv = document.getElementById("result");
             
-            if (typeof result === "string') {
+            if (typeof result === "string") {
                 resultDiv.innerHTML = `<p class="error">${result}</p>`;
             } else {
                 let html = `
@@ -273,6 +223,10 @@
             const resultDiv = document.getElementById("result");
             if (resultDiv.innerHTML) calculate();
         }
+
+        // Añadir event listeners
+        document.getElementById("calculateBtn").addEventListener("click", calculate);
+        document.getElementById("language").addEventListener("change", changeLanguage);
     </script>
 </body>
 </html>
