@@ -34,15 +34,20 @@
     <script src="data.js"></script>
     <script>
         // Función para validar y parsear fecha en formato dd/mm/yyyy
-        function parseDate(input) {
-            const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+          function parseDate(input) {
+            const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
             const match = input.match(regex);
             if (!match) return null;
+
+            // Añadir ceros a la izquierda si es necesario
             const day = parseInt(match[1], 10);
-            const month = parseInt(match[2], 10) - 1;
+            const month = parseInt(match[2], 10) - 1; // Meses en JS son 0-11
             const year = parseInt(match[3], 10);
+
+            // Validar que la fecha sea válida
             const date = new Date(year, month, day);
             if (isNaN(date) || date.getDate() !== day || date.getMonth() !== month || date.getFullYear() !== year) return null;
+
             return date;
         }
 
