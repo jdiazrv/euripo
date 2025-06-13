@@ -22,19 +22,12 @@
                 <input type="text" id="dateInput" placeholder="dd/mm/yyyy" class="mt-1 p-2 border rounded-md w-full">
             </div>
             <button id="calculateBtn" class="btn">Calcular</button>
-            <div id="note" class="note">
-                Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida. El cálculo no es una ciencia exacta y no garantiza que el puente abra a la hora indicada.
-            </div>
+            <div id="note" class="note"></div>
             <div id="result" class="mt-4"></div>
         </div>
         <div class="card mt-4">
-            <h2 class="text-lg font-semibold text-gray-800 mb-2">Más Información</h2>
-            <p class="text-gray-600">
-                Para una explicación detallada del fenómeno de las mareas en el Euripo, visita
-                <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">esta página</a>.
-                Consulta el horario oficial del puente en
-                <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">la página oficial</a>.
-            </p>
+            <h2 id="infoTitle" class="text-lg font-semibold text-gray-800 mb-2">Más Información</h2>
+            <p id="infoContent" class="text-gray-600"></p>
         </div>
     </div>
 
@@ -180,6 +173,8 @@
                 dateLabel: "Introduce la fecha (dd/mm/yyyy):",
                 calculate: "Calcular",
                 note: "Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida. El cálculo no es una ciencia exacta y no garantiza que el puente abra a la hora indicada.",
+                infoTitle: "Más Información",
+                infoContent: `Para una explicación detallada del fenómeno de las mareas en el Euripo, visita <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">esta página</a>. Consulta el horario oficial del puente en <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">la página oficial</a>.`,
                 lastNewMoon: "Última luna nueva",
                 lastFullMoon: "Última luna llena",
                 nextFullMoon: "Próxima luna llena",
@@ -197,6 +192,8 @@
                 dateLabel: "Enter the date (dd/mm/yyyy):",
                 calculate: "Calculate",
                 note: "Note: The calculation determines the moment of no current starting from 21:30. Data is provided by the Port Authority of Chalkida. The calculation is not an exact science and does not guarantee the bridge will open at the indicated time.",
+                infoTitle: "More Information",
+                infoContent: `For a detailed explanation of the tidal phenomenon in the Euripus, visit <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">this page</a>. Check the official bridge timetable at <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">the official website</a>.`,
                 lastNewMoon: "Last New Moon",
                 lastFullMoon: "Last Full Moon",
                 nextFullMoon: "Next Full Moon",
@@ -219,7 +216,9 @@
             document.getElementById("title").textContent = langData[currentLang].title;
             document.getElementById("dateLabel").textContent = langData[currentLang].dateLabel;
             document.getElementById("calculateBtn").textContent = langData[currentLang].calculate;
-            document.getElementById("note").textContent = langData[currentLang].note;
+            document.getElementById("note").innerHTML = langData[currentLang].note;
+            document.getElementById("infoTitle").textContent = langData[currentLang].infoTitle;
+            document.getElementById("infoContent").innerHTML = langData[currentLang].infoContent;
             const resultDiv = document.getElementById("result");
             if (resultDiv.innerHTML) calculate();
         }
@@ -227,6 +226,13 @@
         // Añadir event listeners
         document.getElementById("calculateBtn").addEventListener("click", calculate);
         document.getElementById("language").addEventListener("change", changeLanguage);
+
+        // Inicializar contenido al cargar la página
+        window.onload = function() {
+            document.getElementById("note").innerHTML = langData[currentLang].note;
+            document.getElementById("infoTitle").textContent = langData[currentLang].infoTitle;
+            document.getElementById("infoContent").innerHTML = langData[currentLang].infoContent;
+        };
     </script>
 </body>
 </html>
