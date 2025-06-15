@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Calcula el momento sin corriente del puente de Euripo en Chalkida con nuestra herramienta gratuita, basada en datos de la Port Authority. Disponible en español, inglés y griego.">
-    <title>Calculadora de Apertura del Puente de Euripo - Chalkida</title>
+    <meta name="description" content="Calcula el momento sin corriente del Puente Viejo de Euripo en Chalkida con nuestra herramienta gratuita, basada en datos de la Port Authority. Disponible en español, inglés y griego.">
+    <title>Calculadora de Apertura del Puente Viejo de Euripo - Chalkida</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="alternate" hreflang="es" href="https://euripo.netlify.app/">
     <link rel="alternate" hreflang="en" href="https://euripo.netlify.app/?lang=en">
@@ -21,13 +21,11 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1 id="title" class="text-2xl font-bold text-gray-800 mb-4">Calculadora de Apertura del Puente de Euripo</h1>
-        </header>
         <main>
-            <section aria-label="Calculadora del Puente de Euripo">
+            <section aria-label="Calculadora del Puente Viejo de Euripo">
                 <div class="card">
-                    <img src="euripobridge.png" alt="Puente de Euripo en Chalkida, Grecia" class="bridge-image">
+                    <img src="euripobridge.png" alt="Puente Viejo de Euripo en Chalkida, Grecia" class="bridge-image">
+                    <h1 id="title" class="text-2xl font-bold text-gray-800 mb-4">Calculadora de Apertura del Puente Viejo de Euripo</h1>
                     <form aria-describedby="note" onsubmit="event.preventDefault(); calculate();">
                         <div class="mb-4">
                             <label for="language" class="block text-sm font-medium text-gray-700">Idioma / Language / Γλώσσα:</label>
@@ -47,7 +45,7 @@
                     </form>
                 </div>
                 <div class="card mt-4">
-                    <h2 id="aboutTitle" class="text-lg font-semibold text-gray-800 mb-2">Acerca del Puente de Euripo</h2>
+                    <h2 id="aboutTitle" class="text-lg font-semibold text-gray-800 mb-2">Acerca del Puente Viejo de Euripo</h2>
                     <p id="aboutContent" class="text-gray-600"></p>
                     <h2 id="infoTitle" class="text-lg font-semibold text-gray-800 mb-2">Más Información</h2>
                     <p id="infoContent" class="text-gray-600"></p>
@@ -55,7 +53,7 @@
             </section>
         </main>
         <footer>
-            <p class="text-gray-600 text-center">Datos proporcionados por la <a href="https://olne.gr" target="_blank" class="text-blue-600 hover:underline">Port Authority de Chalkida</a>. Última actualización: 15 de junio de 2025 a las 06:20 PM EEST.</p>
+            <p class="text-gray-600 text-center">Datos proporcionados por la <a href="https://olne.gr" target="_blank" class="text-blue-600 hover:underline">Port Authority de Chalkida</a>. Última actualización: 15 de junio de 2025 a las 06:49 PM EEST.</p>
         </footer>
     </div>
 
@@ -188,7 +186,7 @@
                     <p><strong>${langData[currentLang].lastFullMoon}:</strong> ${result.lastFullMoon}</p>
                     <p><strong>${langData[currentLang].nextFullMoon}:</strong> ${result.nextFullMoon}</p>
                     <p><strong>${langData[currentLang].daysSinceNewMoon}:</strong> ${result.daysSinceNewMoon}</p>
-                    <p><strong>${langData[currentLang].bridgeOpeningTime}:</strong> ${result.bridgeOpeningTime}</p>
+                    <p><strong class="highlight">${langData[currentLang].bridgeOpeningTime}:</strong> ${result.bridgeOpeningTime}</p>
                 `;
                 if (result.message) {
                     html += `<p class="error">${result.message}</p>`;
@@ -200,70 +198,70 @@
         // Datos de idioma
         const langData = {
             es: {
-                metaDescription: "Calcula el momento sin corriente del puente de Euripo en Chalkida con nuestra herramienta gratuita, basada en datos de la Port Authority. Disponible en español, inglés y griego.",
-                title: "Calculadora de Apertura del Puente de Euripo",
+                metaDescription: "Calcula el momento sin corriente del Puente Viejo de Euripo en Chalkida con nuestra herramienta gratuita, basada en datos de la Port Authority. Disponible en español, inglés y griego.",
+                title: "Calculadora de Apertura del Puente Viejo de Euripo",
                 dateLabel: "Introduce la fecha (d/m/yyyy):",
                 calculate: "Calcular",
-                note: "Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida. El cálculo no es una ciencia exacta y no garantiza que el puente abra a la hora indicada.",
+                note: "Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida. El cálculo no es una ciencia exacta y no garantiza que el Puente Viejo de Euripo abra a la hora indicada.",
                 infoTitle: "Más Información",
-                infoContent: `Para una explicación detallada del fenómeno de las mareas en el Euripo, visita <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">esta página</a>. Consulta el horario oficial del puente en <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">la página oficial</a>.`,
-                aboutTitle: "Acerca del Puente de Euripo",
-                aboutContent: "El puente de Euripo en Chalkida, Grecia, es famoso por sus mareas únicas, que cambian hasta 14 veces al día debido al fenómeno del Euripo. Usa nuestra calculadora para planificar tu visita y conocer los horarios sin corriente.",
+                infoContent: `Para una explicación detallada del fenómeno de las mareas en el Euripo, visita <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">esta página</a>. Consulta el horario oficial del Puente Viejo de Euripo en <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">la página oficial</a>.`,
+                aboutTitle: "Acerca del Puente Viejo de Euripo",
+                aboutContent: "El Puente Viejo de Euripo en Chalkida, Grecia, es famoso por sus mareas únicas, que cambian hasta 14 veces al día debido al fenómeno del Euripo. Usa nuestra calculadora para planificar tu visita y conocer los horarios sin corriente.",
                 lastNewMoon: "Última luna nueva",
                 lastFullMoon: "Última luna llena",
                 nextFullMoon: "Próxima luna llena",
                 daysSinceNewMoon: "Días desde la última luna nueva",
-                bridgeOpeningTime: "Hora de apertura del puente",
+                bridgeOpeningTime: "Hora de apertura del Puente Viejo de Euripo",
                 invalidDateFormat: "Formato de fecha inválido. Usa d/m/yyyy (ejemplo: 12/6/2025).",
                 noLunarData: "No hay datos de fases lunares para esta fecha.",
                 irregularStream: "Corriente irregular o sin datos para este día en el ciclo lunar.",
                 refTimeNotFound: "Hora de referencia no encontrada en ningún intervalo.",
-                saturdayWarning: "Nota: Los sábados el puente no abre, aunque la hora calculada es la indicada.",
-                summerWednesday: "Nota: Los miércoles entre el 1 de junio y el 30 de septiembre el puente no abre."
+                saturdayWarning: "Nota: Los sábados el Puente Viejo de Euripo no abre, aunque la hora calculada es la indicada.",
+                summerWednesday: "Nota: Los miércoles entre el 1 de junio y el 30 de septiembre el Puente Viejo de Euripo no abre."
             },
             en: {
-                metaDescription: "Calculate the no-current time at Euripus Bridge in Chalcis with our free tool, based on Port Authority data. Available in Spanish, English, and Greek.",
-                title: "Euripus Bridge Opening Calculator",
+                metaDescription: "Calculate the no-current time at the Old Euripus Bridge in Chalcis with our free tool, based on Port Authority data. Available in Spanish, English, and Greek.",
+                title: "Old Euripus Bridge Opening Calculator",
                 dateLabel: "Enter the date (d/m/yyyy):",
                 calculate: "Calculate",
-                note: "Note: The calculation determines the moment of no current starting from 21:30. Data is provided by the Port Authority of Chalcis. The calculation is not an exact science and does not guarantee the bridge will open at the indicated time.",
+                note: "Note: The calculation determines the moment of no current starting from 21:30. Data is provided by the Port Authority of Chalcis. The calculation is not an exact science and does not guarantee the Old Euripus Bridge will open at the indicated time.",
                 infoTitle: "More Information",
-                infoContent: `For a detailed explanation of the tidal phenomenon in the Euripus, visit <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">this page</a>. Check the official bridge timetable at <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">the official website</a>.`,
-                aboutTitle: "About the Euripus Bridge",
-                aboutContent: "The Euripus Bridge in Chalcis, Greece, is famous for its unique tides, which change up to 14 times a day due to the Euripus phenomenon. Use our calculator to plan your visit and learn the no-current times.",
+                infoContent: `For a detailed explanation of the tidal phenomenon in the Euripus, visit <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">this page</a>. Check the official timetable of the Old Euripus Bridge at <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">the official website</a>.`,
+                aboutTitle: "About the Old Euripus Bridge",
+                aboutContent: "The Old Euripus Bridge in Chalcis, Greece, is famous for its unique tides, which change up to 14 times a day due to the Euripus phenomenon. Use our calculator to plan your visit and learn the no-current times.",
                 lastNewMoon: "Last New Moon",
                 lastFullMoon: "Last Full Moon",
                 nextFullMoon: "Next Full Moon",
                 daysSinceNewMoon: "Days since the last new moon",
-                bridgeOpeningTime: "Bridge opening time",
+                bridgeOpeningTime: "Old Euripus Bridge opening time",
                 invalidDateFormat: "Invalid date format. Use d/m/yyyy (example: 12/6/2025).",
                 noLunarData: "No lunar phase data available for this date.",
                 irregularStream: "Irregular stream or no data for this day in the lunar cycle.",
                 refTimeNotFound: "Reference time not found in any interval.",
-                saturdayWarning: "Note: The bridge does not open on Saturdays, although the calculated time is shown.",
-                summerWednesday: "Note: The bridge does not open on Wednesdays between June 1 and September 30."
+                saturdayWarning: "Note: The Old Euripus Bridge does not open on Saturdays, although the calculated time is shown.",
+                summerWednesday: "Note: The Old Euripus Bridge does not open on Wednesdays between June 1 and September 30."
             },
             el: {
-                metaDescription: "Υπολογίστε τη στιγμή χωρίς ρεύμα στη γέφυρα του Ευρίπου στη Χαλκίδα με το δωρεάν μας εργαλείο, βασισμένο σε δεδομένα της Λιμενικής Αρχής. Διαθέσιμο στα Ισπανικά, Αγγλικά και Ελληνικά.",
-                title: "Υπολογιστής Ανοίγματος της Γέφυρας του Ευρίπου",
+                metaDescription: "Υπολογίστε τη στιγμή χωρίς ρεύμα στη Παλαιά Γέφυρα του Ευρίπου στη Χαλκίδα με το δωρεάν μας εργαλείο, βασισμένο σε δεδομένα της Λιμενικής Αρχής. Διαθέσιμο στα Ισπανικά, Αγγλικά και Ελληνικά.",
+                title: "Υπολογιστής Ανοίγματος της Παλαιάς Γέφυρας του Ευρίπου",
                 dateLabel: "Εισαγάγετε την ημερομηνία (η/μ/χχχχ):",
                 calculate: "Υπολογισμός",
-                note: "Σημείωση: Ο υπολογισμός καθορίζει τη στιγμή που δεν υπάρχει ρεύμα από τις 21:30. Τα δεδομένα προέρχονται από την Λιμενική Αρχή Χαλκίδας. Ο υπολογισμός δεν είναι ακριβής επιστήμη και δεν εγγυάται ότι η γέφυρα θα ανοίξει στην υποδεικνυόμενη ώρα.",
+                note: "Σημείωση: Ο υπολογισμός καθορίζει τη στιγμή που δεν υπάρχει ρεύμα από τις 21:30. Τα δεδομένα προέρχονται από την Λιμενική Αρχή Χαλκίδας. Ο υπολογισμός δεν είναι ακριβής επιστήμη και δεν εγγυάται ότι η Παλαιά Γέφυρα του Ευρίπου θα ανοίξει στην υποδεικνυόμενη ώρα.",
                 infoTitle: "Περισσότερες Πληροφορίες",
-                infoContent: `Για μια λεπτομερή εξήγηση του φαινομένου των παλιρροιών στον Εύριπο, επισκεφθείτε <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">αυτήν την σελίδα</a>. Ελέγξτε το επίσημο πρόγραμμα της γέφυρας στον <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">επίσημο ιστότοπο</a>.`,
-                aboutTitle: "Σχετικά με τη Γέφυρα του Ευρίπου",
-                aboutContent: "Η γέφυρα του Ευρίπου στη Χαλκίδα, Ελλάδα, είναι διάσημη για τις μοναδικές της παλίρροιες, που αλλάζουν έως και 14 φορές την ημέρα λόγω του φαινομένου του Ευρίπου. Χρησιμοποιήστε τον υπολογιστή μας για να προγραμματίσετε την επίσκεψή σας και να μάθετε τις ώρες χωρίς ρεύμα.",
+                infoContent: `Για μια λεπτομερή εξήγηση του φαινομένου των παλιρροιών στον Εύριπο, επισκεφθείτε <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">αυτήν την σελίδα</a>. Ελέγξτε το επίσημο πρόγραμμα της Παλαιάς Γέφυρας του Ευρίπου στον <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">επίσημο ιστότοπο</a>.`,
+                aboutTitle: "Σχετικά με την Παλαιά Γέφυρα του Ευρίπου",
+                aboutContent: "Η Παλαιά Γέφυρα του Ευρίπου στη Χαλκίδα, Ελλάδα, είναι διάσημη για τις μοναδικές της παλίρροιες, που αλλάζουν έως και 14 φορές την ημέρα λόγω του φαινομένου του Ευρίπου. Χρησιμοποιήστε τον υπολογιστή μας για να προγραμματίσετε την επίσκεψή σας και να μάθετε τις ώρες χωρίς ρεύμα.",
                 lastNewMoon: "Τελευταία Νέα Σελήνη",
                 lastFullMoon: "Τελευταία Πανσέληνος",
                 nextFullMoon: "Επόμενη Πανσέληνος",
                 daysSinceNewMoon: "Ημέρες από την τελευταία νέα σελήνη",
-                bridgeOpeningTime: "Ώρα ανοίγματος της γέφυρας",
+                bridgeOpeningTime: "Ώρα ανοίγματος της Παλαιάς Γέφυρας του Ευρίπου",
                 invalidDateFormat: "Μη έγκυρη μορφή ημερομηνίας. Χρησιμοποιήστε η/μ/χχχχ (παράδειγμα: 12/6/2025).",
                 noLunarData: "Δεν υπάρχουν διαθέσιμα δεδομένα φάσεων σελήνης για αυτήν την ημερομηνία.",
                 irregularStream: "Ακανόνιστο ρεύμα ή έλλειψη δεδομένων για αυτήν την ημέρα στον σεληνιακό κύκλο.",
                 refTimeNotFound: "Η ώρα αναφοράς δεν βρέθηκε σε κανένα διάστημα.",
-                saturdayWarning: "Σημείωση: Η γέφυρα δεν ανοίγει τα Σάββατα, αν και η υπολογισμένη ώρα εμφανίζεται.",
-                summerWednesday: "Σημείωση: Η γέφυρα δεν ανοίγει τις Τετάρτες από 1 Ιουνίου έως 30 Σεπτεμβρίου."
+                saturdayWarning: "Σημείωση: Η Παλαιά Γέφυρα του Ευρίπου δεν ανοίγει τα Σάββατα, αν και η υπολογισμένη ώρα εμφανίζεται.",
+                summerWednesday: "Σημείωση: Η Παλαιά Γέφυρα του Ευρίπου δεν ανοίγει τις Τετάρτες από 1 Ιουνίου έως 30 Σεπτεμβρίου."
             }
         };
 
