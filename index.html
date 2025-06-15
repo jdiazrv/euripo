@@ -24,46 +24,43 @@
         <h1 id="title" class="text-2xl font-bold text-gray-800 mb-4">Calculadora de Apertura del Puente de Euripo</h1>
     </header>
     <main class="container">
-        <section class}
-System: {
-  "role": "assistant",
-  "content": "aria-label=\"Calculadora del Puente de Euripo\"">
-            <div class=\"card\">
-                <form aria-describedby=\"note\" onsubmit=\"event.preventDefault(); calculate();\">
-                    <div class=\"mb-4\">
-                        <label for=\"language\" class=\"block text-sm font-medium text-gray-700\">Idioma / Language / Γλώσσα:</label>
-                        <select id=\"language\" class=\"mt-1 p-2 border rounded-md w-full\" aria-label=\"Seleccionar idioma\">
-                            <option value=\"es\">Español</option>
-                            <option value=\"en\">English</option>
-                            <option value=\"el\">Ελληνικά</option>
+        <section aria-label="Calculadora del Puente de Euripo">
+            <div class="card">
+                <form aria-describedby="note" onsubmit="event.preventDefault(); calculate();">
+                    <div class="mb-4">
+                        <label for="language" class="block text-sm font-medium text-gray-700">Idioma / Language / Γλώσσα:</label>
+                        <select id="language" class="mt-1 p-2 border rounded-md w-full" aria-label="Seleccionar idioma">
+                            <option value="es">Español</option>
+                            <option value="en">English</option>
+                            <option value="el">Ελληνικά</option>
                         </select>
                     </div>
-                    <div class=\"mb-4\">
-                        <label for=\"dateInput\" id=\"dateLabel\" class=\"block text-sm font-medium text-gray-700\">Introduce la fecha (d/m/yyyy):</label>
-                        <input type=\"date\" id=\"dateInput\" class=\"mt-1 p-2 border rounded-md w-full\" aria-required=\"true\" required>
+                    <div class="mb-4">
+                        <label for="dateInput" id="dateLabel" class="block text-sm font-medium text-gray-700">Introduce la fecha (d/m/yyyy):</label>
+                        <input type="text" id="dateInput" placeholder="d/m/yyyy" class="mt-1 p-2 border rounded-md w-full" aria-required="true" required>
                     </div>
-                    <button id=\"calculateBtn\" class=\"btn\" type=\"submit\">Calcular</button>
-                    <p id=\"note\" class=\"note\">Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida. El cálculo no es una ciencia exacta y no garantiza que el puente abra a la hora indicada.</p>
-                    <div id=\"result\" class=\"mt-4\" aria-live=\"polite\"></div>
+                    <button id="calculateBtn" class="btn" type="submit">Calcular</button>
+                    <p id="note" class="note"></p>
+                    <div id="result" class="mt-4" aria-live="polite"></div>
                 </form>
             </div>
-            <div class=\"card mt-4\">
-                <h2 id=\"infoTitle\" class=\"text-lg font-semibold text-gray-800 mb-2\">Más Información</h2>
-                <p id=\"infoContent\" class=\"text-gray-600\">Para una explicación detallada del fenómeno de las mareas en el Euripo, visita <a href=\"https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon\" target=\"_blank\" class=\"text-blue-600 hover:underline\">esta página</a>. Consulta el horario oficial del puente en <a href=\"https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable\" target=\"_blank\" class=\"text-blue-600 hover:underline\">la página oficial</a>.</p>
-                <h2 class=\"text-lg font-semibold text-gray-800 mb-2\">Acerca del Puente de Euripo</h2>
-                <p class=\"text-gray-600\">El puente de Euripo en Chalkida, Grecia, es famoso por sus mareas únicas, que cambian hasta 14 veces al día debido al fenómeno del Euripo. Usa nuestra calculadora para planificar tu visita y conocer los horarios sin corriente.</p>
+            <div class="card mt-4">
+                <h2 id="infoTitle" class="text-lg font-semibold text-gray-800 mb-2">Más Información</h2>
+                <p id="infoContent" class="text-gray-600"></p>
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">Acerca del Puente de Euripo</h2>
+                <p class="text-gray-600">El puente de Euripo en Chalkida, Grecia, es famoso por sus mareas únicas, que cambian hasta 14 veces al día debido al fenómeno del Euripo. Usa nuestra calculadora para planificar tu visita y conocer los horarios sin corriente.</p>
             </div>
         </section>
     </main>
     <footer>
-        <p class=\"text-gray-600 text-center\">Datos proporcionados por la <a href=\"https://olne.gr\" target=\"_blank\" class=\"text-blue-600 hover:underline\">Port Authority de Chalkida</a>. Última actualización: 15 de junio de 2025.</p>
+        <p class="text-gray-600 text-center">Datos proporcionados por la <a href="https://olne.gr" target="_blank" class="text-blue-600 hover:underline">Port Authority de Chalkida</a>. Última actualización: 15 de junio de 2025.</p>
     </footer>
 
-    <script defer src=\"data.js\"></script>
+    <script defer src="data.js"></script>
     <script>
-        // Función para validar y parsear fecha
+        // Función para validar y parsear fecha en formato d/m/yyyy
         function parseDate(input) {
-            const regex = /^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})$/;
+            const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
             const match = input.match(regex);
             if (!match) return null;
 
@@ -118,19 +115,19 @@ System: {
         }
 
         // Obtener hora de apertura del puente
-        function getBridgeOpeningTime(daysSinceNewMoon, referenceTime = \"21:30\", isDST = false) {
+        function getBridgeOpeningTime(daysSinceNewMoon, referenceTime = "21:30", isDST = false) {
             if (daysSinceNewMoon < 0 || daysSinceNewMoon > 29 || !bridgeIntervals[Math.min(29, Math.max(0, daysSinceNewMoon))]) {
                 return langData[currentLang].irregularStream;
             }
 
             const intervals = bridgeIntervals[Math.min(29, Math.max(0, daysSinceNewMoon))];
-            const [refHour, refMinute] = referenceTime.split(\":\").map(Number);
+            const [refHour, refMinute] = referenceTime.split(":").map(Number);
             const refTimeMinutes = refHour * 60 + refMinute;
 
             for (let interval of intervals) {
-                const [start, end] = interval.split(\"-\");
-                const [startHour, startMinute] = start.split(\":\").map(Number);
-                const [endHour, endMinute] = end.split(\":\").map(Number);
+                const [start, end] = interval.split("-");
+                const [startHour, startMinute] = start.split(":").map(Number);
+                const [endHour, endMinute] = end.split(":").map(Number);
 
                 const startMinutes = startHour * 60 + startMinute;
                 let endMinutes = endHour * 60 + endMinute;
@@ -141,8 +138,8 @@ System: {
                     let totalMinutes = endMinutes + 1;
                     if (isDST) totalMinutes += 60;
                     if (totalMinutes >= 24 * 60) totalMinutes -= 24 * 60;
-                    const hours = Math.floor(totalMinutes / 60).toString().padStart(2, \"0\");
-                    const minutes = (totalMinutes % 60).toString().padStart(2, \"0\");
+                    const hours = Math.floor(totalMinutes / 60).toString().padStart(2, "0");
+                    const minutes = (totalMinutes % 60).toString().padStart(2, "0");
                     return `${hours}:${minutes}${isDST ? ' (EEST)' : ' (EET)'}`;
                 }
             }
@@ -153,7 +150,7 @@ System: {
         // Calcular apertura del puente
         function calculateBridgeOpening(inputDate) {
             const lunarInfo = getLunarPhaseInfo(inputDate);
-            if (typeof lunarInfo === \"string\") return lunarInfo;
+            if (typeof lunarInfo === "string") return lunarInfo;
 
             const isSaturday = lunarInfo.inputDate.getDay() === 6;
             const isWednesday = lunarInfo.inputDate.getDay() === 3;
@@ -162,7 +159,7 @@ System: {
 
             let result = {
                 ...lunarInfo,
-                bridgeOpeningTime: getBridgeOpeningTime(lunarInfo.daysSinceNewMoon, \"21:30\", lunarInfo.isDST)
+                bridgeOpeningTime: getBridgeOpeningTime(lunarInfo.daysSinceNewMoon, "21:30", lunarInfo.isDST)
             };
 
             if (isSaturday) {
@@ -176,24 +173,22 @@ System: {
 
         // Manejar botón de cálculo
         function calculate() {
-            const dateInput = document.getElementById(\"dateInput\").value;
-            const date = new Date(dateInput);
-            const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-            const result = calculateBridgeOpening(formattedDate);
-            const resultDiv = document.getElementById(\"result\");
+            const dateInput = document.getElementById("dateInput").value;
+            const result = calculateBridgeOpening(dateInput);
+            const resultDiv = document.getElementById("result");
             
-            if (typeof result === \"string\") {
-                resultDiv.innerHTML = `<p class=\"error\">${result}</p>`;
+            if (typeof result === "string") {
+                resultDiv.innerHTML = `<p class="error">${result}</p>`;
             } else {
                 let html = `
                     <p><strong>${langData[currentLang].lastNewMoon}:</strong> ${result.lastNewMoon}</p>
                     <p><strong>${langData[currentLang].lastFullMoon}:</strong> ${result.lastFullMoon}</p>
                     <p><strong>${langData[currentLang].nextFullMoon}:</strong> ${result.nextFullMoon}</p>
-                    <p><strong>${langData[currentLang].daysSinceNewMoon}:</strong> ${resultromium
+                    <p><strong>${langData[currentLang].daysSinceNewMoon}:</strong> ${result.daysSinceNewMoon}</p>
                     <p><strong>${langData[currentLang].bridgeOpeningTime}:</strong> ${result.bridgeOpeningTime}</p>
                 `;
                 if (result.message) {
-                    html += `<p class=\"error\">${result.message}</p>`;
+                    html += `<p class="error">${result.message}</p>`;
                 }
                 resultDiv.innerHTML = html;
             }
@@ -202,90 +197,94 @@ System: {
         // Datos de idioma
         const langData = {
             es: {
-                title: \"Calculadora de Apertura del Puente de Euripo\",
-                dateLabel: \"Introduce la fecha (d/m/yyyy):\",
-                calculate: \"Calcular\",
-                note: \"Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida. El cálculo no es una ciencia exacta y no garantiza que el puente abra a la hora indicada.\",
-                infoTitle: \"Más Información\",
-                infoContent: `Para una explicación detallada del fenómeno de las mareas en el Euripo, visita <a href=\"https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon\" target=\"_blank\" class=\"text-blue-600 hover:underline\">esta página</a>. Consulta el horario oficial del puente en <a href=\"https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable\" target=\"_blank\" class=\"text-blue-600 hover:underline\">la página oficial</a>.`,
-                lastNewMoon: \"Última luna nueva\",
-                lastFullMoon: \"Última luna llena\",
-                nextFullMoon: \"Próxima luna llena\",
-                daysSinceNewMoon: \"Días desde la última luna nueva\",
-                bridgeOpeningTime: \"Hora de apertura del puente\",
-                invalidDateFormat: \"Formato de fecha inválido. Usa d/m/yyyy (ejemplo: 12/6/2025).\",
-                noLunarData: \"No hay datos de fases lunares para esta fecha.\",
-                irregularStream: \"Corriente irregular o sin datos para este día en el ciclo lunar.\",
-                refTimeNotFound: \"Hora de referencia no encontrada en ningún intervalo.\",
-                saturdayWarning: \"Nota: Los sábados el puente no abre, aunque la hora calculada es la indicada.\",
-                summerWednesday: \"Nota: Los miércoles entre el 1 de junio y el 30 de septiembre el puente no abre.\"
+                metaDescription: "Calcula el momento sin corriente del puente de Euripo en Chalkida con nuestra herramienta gratuita, basada en datos de la Port Authority. Disponible en español, inglés y griego.",
+                title: "Calculadora de Apertura del Puente de Euripo",
+                dateLabel: "Introduce la fecha (d/m/yyyy):",
+                calculate: "Calcular",
+                note: "Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida. El cálculo no es una ciencia exacta y no garantiza que el puente abra a la hora indicada.",
+                infoTitle: "Más Información",
+                infoContent: `Para una explicación detallada del fenómeno de las mareas en el Euripo, visita <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">esta página</a>. Consulta el horario oficial del puente en <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">la página oficial</a>.`,
+                lastNewMoon: "Última luna nueva",
+                lastFullMoon: "Última luna llena",
+                nextFullMoon: "Próxima luna llena",
+                daysSinceNewMoon: "Días desde la última luna nueva",
+                bridgeOpeningTime: "Hora de apertura del puente",
+                invalidDateFormat: "Formato de fecha inválido. Usa d/m/yyyy (ejemplo: 12/6/2025).",
+                noLunarData: "No hay datos de fases lunares para esta fecha.",
+                irregularStream: "Corriente irregular o sin datos para este día en el ciclo lunar.",
+                refTimeNotFound: "Hora de referencia no encontrada en ningún intervalo.",
+                saturdayWarning: "Nota: Los sábados el puente no abre, aunque la hora calculada es la indicada.",
+                summerWednesday: "Nota: Los miércoles entre el 1 de junio y el 30 de septiembre el puente no abre."
             },
             en: {
-                title: \"Euripus Bridge Opening Calculator\",
-                dateLabel: \"Enter the date (d/m/yyyy):\",
-                calculate: \"Calculate\",
-                note: \"Note: The calculation determines the moment of no current starting from 21:30. Data is provided by the Port Authority of Chalcis. The calculation is not an exact science and does not guarantee the bridge will open at the indicated time.\",
-                infoTitle: \"More Information\",
-                infoContent: `For a detailed explanation of the tidal phenomenon in the Euripus, visit <a href=\"https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon\" target=\"_blank\" class=\"text-blue-600 hover:underline\">this page</a>. Check the official bridge timetable at <a href=\"https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable\" target=\"_blank\" class=\"text-blue-600 hover:underline\">the official website</a>.`,
-                lastNewMoon: \"Last New Moon\",
-                lastFullMoon: \"Last Full Moon\",
-                nextFullMoon: \"Next Full Moon\",
-                daysSinceNewMoon: \"Days since the last new moon\",
-                bridgeOpeningTime: \"Bridge opening time\",
-                invalidDateFormat: \"Invalid date format. Use d/m/yyyy (example: 12/6/2025).\",
-                noLunarData: \"No lunar phase data available for this date.\",
-                irregularStream: \"Irregular stream or no data for this day in the lunar cycle.\",
-                refTimeNotFound: \"Reference time not found in any interval.\",
-                saturdayWarning: \"Note: The bridge does not open on Saturdays, although the calculated time is shown.\",
-                summerWednesday: \"Note: The bridge does not open on Wednesdays between June 1 and September 30.\"
+                metaDescription: "Calculate the no-current time at Euripus Bridge in Chalcis with our free tool, based on Port Authority data. Available in Spanish, English, and Greek.",
+                title: "Euripus Bridge Opening Calculator",
+                dateLabel: "Enter the date (d/m/yyyy):",
+                calculate: "Calculate",
+                note: "Note: The calculation determines the moment of no current starting from 21:30. Data is provided by the Port Authority of Chalcis. The calculation is not an exact science and does not guarantee the bridge will open at the indicated time.",
+                infoTitle: "More Information",
+                infoContent: `For a detailed explanation of the tidal phenomenon in the Euripus, visit <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">this page</a>. Check the official bridge timetable at <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">the official website</a>.`,
+                lastNewMoon: "Last New Moon",
+                lastFullMoon: "Last Full Moon",
+                nextFullMoon: "Next Full Moon",
+                daysSinceNewMoon: "Days since the last new moon",
+                bridgeOpeningTime: "Bridge opening time",
+                invalidDateFormat: "Invalid date format. Use d/m/yyyy (example: 12/6/2025).",
+                noLunarData: "No lunar phase data available for this date.",
+                irregularStream: "Irregular stream or no data for this day in the lunar cycle.",
+                refTimeNotFound: "Reference time not found in any interval.",
+                saturdayWarning: "Note: The bridge does not open on Saturdays, although the calculated time is shown.",
+                summerWednesday: "Note: The bridge does not open on Wednesdays between June 1 and September 30."
             },
             el: {
-                title: \"Υπολογιστής Ανοίγματος της Γέφυρας του Ευρίπου\",
-                dateLabel: \"Εισαγάγετε την ημερομηνία (η/μ/χχχχ):\",
-                calculate: \"Υπολογισμός\",
-                note: \"Σημείωση: Ο υπολογισμός καθορίζει τη στιγμή που δεν υπάρχει ρεύμα από τις 21:30. Τα δεδομένα προέρχονται από την Λιμενική Αρχή Χαλκίδας. Ο υπολογισμός δεν είναι ακριβής επιστήμη και δεν εγγυάται ότι η γέφυρα θα ανοίξει στην υποδεικνυόμενη ώρα.\",
-                infoTitle: \"Περισσότερες Πληροφορίες\",
-                infoContent: `Για μια λεπτομερή εξήγηση του φαινομένου των παλιρροιών στον Εύριπο, επισκεφθείτε <a href=\"https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon\" target=\"_blank\" class=\"text-blue-600 hover:underline\">αυτήν την σελίδα</a>. Ελέγξτε το επίσημο πρόγραμμα της γέφυρας στον <a href=\"https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable\" target=\"_blank\" class=\"text-blue-600 hover:underline\">επίσημο ιστότοπο</a>.`,
-                lastNewMoon: \"Τελευταία Νέα Σελήνη\",
-                lastFullMoon: \"Τελευταία Πανσέληνος\",
-                nextFullMoon: \"Επόμενη Πανσέληνος\",
-                daysSinceNewMoon: \"Ημέρες από την τελευταία νέα σελήνη\",
-                bridgeOpeningTime: \"Ώρα ανοίγματος της γέφυρας\",
-                invalidDateFormat: \"Μη έγκυρη μορφή ημερομηνίας. Χρησιμοποιήστε η/μ/χχχχ (παράδειγμα: 12/6/2025).\",
-                noLunarData: \"Δεν υπάρχουν διαθέσιμα δεδομένα φάσεων σελήνης για αυτήν την ημερομηνία.\",
-                irregularStream: \"Ακανόνιστο ρεύμα ή έλλειψη δεδομένων για αυτήν την ημέρα στον σεληνιακό κύκλο.\",
-                refTimeNotFound: \"Η ώρα αναφοράς δεν βρέθηκε σε κανένα διάστημα.\",
-                saturdayWarning: \"Σημείωση: Η γέφυρα δεν ανοίγει τα Σάββατα, αν και η υπολογισμένη ώρα εμφανίζεται.\",
-                summerWednesday: \"Σημείωση: Η γέφυρα δεν ανοίγει τις Τετάρτες από 1 Ιουνίου έως 30 Σεπτεμβρίου.\"
+                metaDescription: "Υπολογίστε τη στιγμή χωρίς ρεύμα στη γέφυρα του Ευρίπου στη Χαλκίδα με το δωρεάν μας εργαλείο, βασισμένο σε δεδομένα της Λιμενικής Αρχής. Διαθέσιμο στα Ισπανικά, Αγγλικά και Ελληνικά.",
+                title: "Υπολογιστής Ανοίγματος της Γέφυρας του Ευρίπου",
+                dateLabel: "Εισαγάγετε την ημερομηνία (η/μ/χχχχ):",
+                calculate: "Υπολογισμός",
+                note: "Σημείωση: Ο υπολογισμός καθορίζει τη στιγμή που δεν υπάρχει ρεύμα από τις 21:30. Τα δεδομένα προέρχονται από την Λιμενική Αρχή Χαλκίδας. Ο υπολογισμός δεν είναι ακριβής επιστήμη και δεν εγγυάται ότι η γέφυρα θα ανοίξει στην υποδεικνυόμενη ώρα.",
+                infoTitle: "Περισσότερες Πληροφορίες",
+                infoContent: `Για μια λεπτομερή εξήγηση του φαινομένου των παλιρροιών στον Εύριπο, επισκεφθείτε <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">αυτήν την σελίδα</a>. Ελέγξτε το επίσημο πρόγραμμα της γέφυρας στον <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">επίσημο ιστότοπο</a>.`,
+                lastNewMoon: "Τελευταία Νέα Σελήνη",
+                lastFullMoon: "Τελευταία Πανσέληνος",
+                nextFullMoon: "Επόμενη Πανσέληνος",
+                daysSinceNewMoon: "Ημέρες από την τελευταία νέα σελήνη",
+                bridgeOpeningTime: "Ώρα ανοίγματος της γέφυρας",
+                invalidDateFormat: "Μη έγκυρη μορφή ημερομηνίας. Χρησιμοποιήστε η/μ/χχχχ (παράδειγμα: 12/6/2025).",
+                noLunarData: "Δεν υπάρχουν διαθέσιμα δεδομένα φάσεων σελήνης για αυτήν την ημερομηνία.",
+                irregularStream: "Ακανόνιστο ρεύμα ή έλλειψη δεδομένων για αυτήν την ημέρα στον σεληνιακό κύκλο.",
+                refTimeNotFound: "Η ώρα αναφοράς δεν βρέθηκε σε κανένα διάστημα.",
+                saturdayWarning: "Σημείωση: Η γέφυρα δεν ανοίγει τα Σάββατα, αν και η υπολογισμένη ώρα εμφανίζεται.",
+                summerWednesday: "Σημείωση: Η γέφυρα δεν ανοίγει τις Τετάρτες από 1 Ιουνίου έως 30 Σεπτεμβρίου."
             }
         };
 
-        let currentLang = \"es\";
+        let currentLang = "es";
 
         // Cambiar idioma
         function changeLanguage() {
-            currentLang = document.getElementById(\"language\").value;
+            currentLang = document.getElementById("language").value;
             document.documentElement.lang = currentLang;
-            document.querySelector('meta[name=\"description\"]').content = langData[currentLang].metaDescription;
-            document.getElementById(\"title\").textContent = langData[currentLang].title;
-            document.getElementById(\"dateLabel\").textContent = langData[currentLang].dateLabel;
-            document.getElementById(\"calculateBtn\").textContent = langData[currentLang].calculate;
-            document.getElementById(\"note\").innerHTML = langData[currentLang].note;
-            document.getElementById(\"infoTitle\").textContent = langData[currentLang].infoTitle;
-            document.getElementById(\"infoContent\").innerHTML = langData[currentLang].infoContent;
-            const resultDiv = document.getElementById(\"result\");
+            document.querySelector('meta[name="description"]').content = langData[currentLang].metaDescription;
+            document.getElementById("title").textContent = langData[currentLang].title;
+            document.getElementById("dateLabel").textContent = langData[currentLang].dateLabel;
+            document.getElementById("calculateBtn").textContent = langData[currentLang].calculate;
+            document.getElementById("note").innerHTML = langData[currentLang].note;
+            document.getElementById("infoTitle").textContent = langData[currentLang].infoTitle;
+            document.getElementById("infoContent").innerHTML = langData[currentLang].infoContent;
+            const resultDiv = document.getElementById("result");
             if (resultDiv.innerHTML) calculate();
         }
 
         // Añadir event listeners
-        document.getElementById(\"calculateBtn\").addEventListener(\"click\", calculate);
-        document.getElementById(\"language\").addEventListener(\"change\", changeLanguage);
+        document.getElementById("calculateBtn").addEventListener("click", calculate);
+        document.getElementById("language").addEventListener("change", changeLanguage);
 
         // Inicializar contenido al cargar la página
         window.onload = function() {
-            document.getElementById(\"note\").innerHTML = langData[currentLang].note;
-            document.getElementById(\"infoTitle\").textContent = langData[currentLang].infoTitle;
-            document.getElementById(\"infoContent\").innerHTML = langData[currentLang].infoContent;
+            document.getElementById("note").innerHTML = langData[currentLang].note;
+            document.getElementById("infoTitle").textContent = langData[currentLang].infoTitle;
+            document.getElementById("infoContent").innerHTML = langData[currentLang].infoContent;
+            changeLanguage(); // Asegurar que el idioma inicial se aplique
         };
     </script>
 </body>
