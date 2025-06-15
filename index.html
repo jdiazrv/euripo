@@ -24,7 +24,7 @@
         <main>
             <section aria-label="Calculadora del Puente Viejo de Euripo">
                 <div class="card">
-                    <img src="euripobridge.png" alt="Puente Viejo de Euripo en Chalkida, Grecia" class="bridge-image">
+                    <img src="euripobridge.jpg" alt="Puente Viejo de Euripo en Chalkida, Grecia" class="bridge-image">
                     <h1 id="title" class="text-2xl font-bold text-gray-800 mb-4">Calculadora de Apertura del Puente Viejo de Euripo</h1>
                     <form aria-describedby="note" onsubmit="event.preventDefault(); calculate();">
                         <div class="mb-4">
@@ -53,7 +53,9 @@
             </section>
         </main>
         <footer>
-            <p class="text-gray-600 text-center">Datos proporcionados por la <a href="https://olne.gr" target="_blank" class="text-blue-600 hover:underline">Port Authority de Chalkida</a>. Última actualización: 15 de junio de 2025 a las 06:49 PM EEST.</p>
+            <div class="footer-card">
+                <p id="footerText" class="text-gray-600 text-center"></p>
+            </div>
         </footer>
     </div>
 
@@ -217,7 +219,8 @@
                 irregularStream: "Corriente irregular o sin datos para este día en el ciclo lunar.",
                 refTimeNotFound: "Hora de referencia no encontrada en ningún intervalo.",
                 saturdayWarning: "Nota: Los sábados el Puente Viejo de Euripo no abre, aunque la hora calculada es la indicada.",
-                summerWednesday: "Nota: Los miércoles entre el 1 de junio y el 30 de septiembre el Puente Viejo de Euripo no abre."
+                summerWednesday: "Nota: Los miércoles entre el 1 de junio y el 30 de septiembre el Puente Viejo de Euripo no abre.",
+                footerText: "Datos proporcionados por la <a href='https://olne.gr' target='_blank' class='text-blue-600 hover:underline'>Port Authority de Chalkida</a>. Última actualización: 15 de junio de 2025 a las 07:08 PM EEST."
             },
             en: {
                 metaDescription: "Calculate the no-current time at the Old Euripus Bridge in Chalcis with our free tool, based on Port Authority data. Available in Spanish, English, and Greek.",
@@ -239,7 +242,8 @@
                 irregularStream: "Irregular stream or no data for this day in the lunar cycle.",
                 refTimeNotFound: "Reference time not found in any interval.",
                 saturdayWarning: "Note: The Old Euripus Bridge does not open on Saturdays, although the calculated time is shown.",
-                summerWednesday: "Note: The Old Euripus Bridge does not open on Wednesdays between June 1 and September 30."
+                summerWednesday: "Note: The Old Euripus Bridge does not open on Wednesdays between June 1 and September 30.",
+                footerText: "Data provided by the <a href='https://olne.gr' target='_blank' class='text-blue-600 hover:underline'>Port Authority of Chalcis</a>. Last updated: June 15, 2025 at 07:08 PM EEST."
             },
             el: {
                 metaDescription: "Υπολογίστε τη στιγμή χωρίς ρεύμα στη Παλαιά Γέφυρα του Ευρίπου στη Χαλκίδα με το δωρεάν μας εργαλείο, βασισμένο σε δεδομένα της Λιμενικής Αρχής. Διαθέσιμο στα Ισπανικά, Αγγλικά και Ελληνικά.",
@@ -261,7 +265,8 @@
                 irregularStream: "Ακανόνιστο ρεύμα ή έλλειψη δεδομένων για αυτήν την ημέρα στον σεληνιακό κύκλο.",
                 refTimeNotFound: "Η ώρα αναφοράς δεν βρέθηκε σε κανένα διάστημα.",
                 saturdayWarning: "Σημείωση: Η Παλαιά Γέφυρα του Ευρίπου δεν ανοίγει τα Σάββατα, αν και η υπολογισμένη ώρα εμφανίζεται.",
-                summerWednesday: "Σημείωση: Η Παλαιά Γέφυρα του Ευρίπου δεν ανοίγει τις Τετάρτες από 1 Ιουνίου έως 30 Σεπτεμβρίου."
+                summerWednesday: "Σημείωση: Η Παλαιά Γέφυρα του Ευρίπου δεν ανοίγει τις Τετάρτες από 1 Ιουνίου έως 30 Σεπτεμβρίου.",
+                footerText: "Τα δεδομένα παρέχονται από την <a href='https://olne.gr' target='_blank' class='text-blue-600 hover:underline'>Λιμενική Αρχή Χαλκίδας</a>. Τελευταία ενημέρωση: 15 Ιουνίου 2025 στις 07:08 μ.μ. EEST."
             }
         };
 
@@ -280,6 +285,7 @@
             document.getElementById("infoContent").innerHTML = langData[currentLang].infoContent;
             document.getElementById("aboutTitle").textContent = langData[currentLang].aboutTitle;
             document.getElementById("aboutContent").innerHTML = langData[currentLang].aboutContent;
+            document.getElementById("footerText").innerHTML = langData[currentLang].footerText;
             const resultDiv = document.getElementById("result");
             if (resultDiv.innerHTML) calculate();
         }
@@ -295,6 +301,7 @@
             document.getElementById("infoContent").innerHTML = langData[currentLang].infoContent;
             document.getElementById("aboutTitle").textContent = langData[currentLang].aboutTitle;
             document.getElementById("aboutContent").innerHTML = langData[currentLang].aboutContent;
+            document.getElementById("footerText").innerHTML = langData[currentLang].footerText;
             changeLanguage(); // Asegurar que el idioma inicial se aplique
         };
     </script>
