@@ -10,6 +10,7 @@ body {
 .container {
     max-width: 32rem;
     margin: 2rem;
+    width: 100%;
 }
 
 .card {
@@ -18,6 +19,8 @@ body {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden; /* Asegurar que la imagen no se salga */
 }
 
 .card:hover {
@@ -133,4 +136,36 @@ body {
 
 .mt-4 {
     margin-top: 1rem;
+}
+
+.bridge-image {
+    max-width: 100%; /* Ajustar al ancho del .card */
+    max-height: 20rem; /* Límite de altura para contener la imagen */
+    height: auto; /* Mantener proporción */
+    width: 100%; /* Asegurar que ocupe el ancho completo del .card */
+    object-fit: cover; /* Recortar si excede los límites */
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem; /* Más espacio antes del formulario */
+    display: block; /* Evitar espacios extra debajo */
+}
+
+.highlight {
+    background-color: #f0f9ff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+footer {
+    margin-top: 2rem;
+}
+
+.footer-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    text-align: center;
+    word-break: break-word;
+    max-width: 32rem;
+    margin: 0 auto;
 }
