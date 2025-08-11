@@ -89,6 +89,18 @@
             return date >= dstStart && date < dstEnd;
         }
 
+        // Verificar si es un día no operativo
+        function isNonOperatingDay(date) {
+            const dayOfWeek = date.getDay(); // 0: Domingo, 1: Lunes, ..., 6: Sábado
+            const isTuesday = dayOfWeek === 2;
+            const isThursday = dayOfWeek === 4;
+            const isSaturday = dayOfWeek === 6;
+            const isAugust14 = date.getDate() === 14 && date.getMonth() === 7 && date.getFullYear() === 2025; // 14 de agosto de 2025
+
+            // El puente no abre los martes, jueves (excepto 14 de agosto) ni sábados
+            return isTuesday || (isThursday && !isAugust14) || isSaturday;
+        }
+
         // Obtener fase lunar más cercana
         function getLunarPhaseInfo(inputDate) {
             const date = parseDate(inputDate);
@@ -150,181 +162,174 @@
             return langData[currentLang].refTimeNotFound;
         }
 
-       
+        // Calcular apertura del puente
+        function calculateBridgeOpening(inputDate) {
+            const lunarInfo = getLunarPhaseInfo(inputDate);
+            if (typeof lunarInfo === "string") return lunarInfo;
 
-    // Calcular apertura del puente
-    function calculateBridgeOpening(inputDate) {
-        const lunarInfo = getLunarPhaseInfo(inputDate);
-        if (typeof lunarInfo === "string") return lunarInfo;
+            const isNonOpDay = isNonOperatingDay(lunarInfo.inputDate);
+            const isSaturday = lunarInfo.inputDate.getDay() === 6;
 
-        const isSaturday = lunarInfo.inputDate.getDay() === 6;
-        const isWednesday = lunarInfo.inputDate.getDay() === 3;
-        const isSummerWednesday = isWednesday &&
-            lunarInfo.inputDate.getMonth() >= 5 && lunarInfo.inputDate.getMonth() <= 8;
+            let result = {
+                ...lunarInfo,
+                bridgeOpeningTime: getBridgeOpeningTime(lunarInfo.daysSinceNewMoon, "21:30", lunarInfo.isDST),
+                isNonOperatingDay: isNonOpDay
+            };
 
-        let result = {
-            ...lunarInfo,
-            bridgeOpeningTime: getBridgeOpeningTime(lunarInfo.daysSinceNewMoon, "21:30", lunarInfo.isDST)
+            if (isSaturday) {
+                result.message = langData[currentLang].saturdayWarning;
+            } else if (isNonOpDay) {
+                return langData[currentLang].nonOperatingDay;
+            }
+
+            return result;
+        }
+
+        // Manejar botón de cálculo
+        function calculate() {
+            const dateInput = document.getElementById("dateInput").value;
+            const result = calculateBridgeOpening(dateInput);
+            const resultDiv = document.getElementById("result");
+
+            if (typeof result === "string") {
+                resultDiv.innerHTML = `<p class="error">${result}</p>`;
+                if (result === langData[currentLang].nonOperatingDay) {
+                    resultDiv.innerHTML += `<p class="note small">${langData[currentLang].olneCalendarNote}</p>`;
+                }
+            } else {
+                let html = `
+                    <p><strong>${langData[currentLang].lastNewMoon}:</strong> ${result.lastNewMoon}</p>
+                    <p><strong>${langData[currentLang].lastFullMoon}:</strong> ${result.lastFullMoon}</p>
+                    <p><strong>${langData[currentLang].nextFullMoon}:</strong> ${result.nextFullMoon}</p>
+                    <p><strong>${langData[currentLang].daysSinceNewMoon}:</strong> ${result.daysSinceNewMoon}</p>
+                    <p><strong class="highlight">${langData[currentLang].bridgeOpeningTime}:</strong> ${result.bridgeOpeningTime}</p>
+                `;
+                if (result.message) {
+                    html += `<p class="error">${result.message}</p>`;
+                    html += `<p class="note small">${langData[currentLang].olneCalendarNote}</p>`;
+                }
+
+                // Si la hora calculada está en madrugada después de las 03:00 (03:00-05:59),
+                // mostrar la nota adicional (días próximos a luna llena)
+                const timeMatch = result.bridgeOpeningTime.match(/^(\d{2}):(\d{2})/);
+                if (timeMatch && !result.isNonOperatingDay) {
+                    const hour = parseInt(timeMatch[1], 10);
+                    if (hour >= 3 && hour < 6) {
+                        html += `<p class="note small">${langData[currentLang].earlyMorningNote}</p>`;
+                    }
+                }
+
+                resultDiv.innerHTML = html;
+            }
+        }
+
+        // Datos de idioma (eliminado summerWednesday, añadido nonOperatingDay)
+        const langData = {
+            es: {
+                metaDescription: "Calcula el momento sin corriente del Puente Viejo de Euripo en Chalkida con nuestra herramienta gratuita, basada en datos de la Port Authority. Disponible en español, inglés y griego.",
+                title: "Calculadora de Apertura del Puente Viejo de Euripo",
+                dateLabel: "Introduce la fecha (d/m/yyyy):",
+                calculate: "Calcular",
+                note: "Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida. El cálculo no es una ciencia exacta y no garantiza que el Puente Viejo de Euripo abra a la hora indicada.",
+                olneCalendarNote: "Según el calendario publicado el 8 de agosto por OLNE, el puente abrirá a partir de ahora LUNES, MIÉRCOLES, VIERNES y DOMINGO. También abrirá el jueves 14 de agosto de 2025.",
+                earlyMorningNote: "Nota adicional: en los días cercanos a la luna llena, si la hora calculada es después de las 03:00, es frecuente que la hora de apertura se adelante hacia aproximadamente las 22:00 (10:00 PM).",
+                infoTitle: "Más Información",
+                infoContent: `Para una explicación detallada del fenómeno de las mareas en el Euripo, visita <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">esta página</a>. Consulta el horario oficial del Puente Viejo de Euripo en <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">la página oficial</a>.`,
+                aboutTitle: "Acerca del Puente Viejo de Euripo",
+                aboutContent: "El Puente Viejo de Euripo en Chalkida, Grecia, es famoso por sus mareas únicas, que cambian hasta 14 veces al día debido al fenómeno del Euripo. Usa nuestra calculadora para planificar tu visita y conocer los horarios sin corriente.",
+                lastNewMoon: "Última luna nueva",
+                lastFullMoon: "Última luna llena",
+                nextFullMoon: "Próxima luna llena",
+                daysSinceNewMoon: "Días desde la última luna nueva",
+                bridgeOpeningTime: "Hora de apertura del Puente Viejo de Euripo",
+                invalidDateFormat: "Formato de fecha inválido. Usa d/m/yyyy (ejemplo: 12/6/2025).",
+                noLunarData: "No hay datos de fases lunares para esta fecha.",
+                irregularStream: "Corriente irregular o sin datos para este día en el ciclo lunar.",
+                refTimeNotFound: "Hora de referencia no encontrada en ningún intervalo.",
+                saturdayWarning: "Nota: Los sábados el Puente Viejo de Euripo no abre, aunque la hora calculada es la indicada.",
+                nonOperatingDay: "Nota: El Puente Viejo de Euripo no abre en la fecha seleccionada (martes, jueves o sábado, salvo el 14 de agosto de 2025).",
+                footerText: "Datos proporcionados por la <a href='https://olne.gr' target='_blank' class='text-blue-600 hover:underline'>Port Authority de Chalkida</a>. Última actualización: 15 de junio de 2025 a las 07:30 PM EEST."
+            },
+            en: {
+                metaDescription: "Calculate the no-current time at the Old Euripus Bridge in Chalcis with our free tool, based on Port Authority data. Available in Spanish, English, and Greek.",
+                title: "Old Euripus Bridge Opening Calculator",
+                dateLabel: "Enter the date (d/m/yyyy):",
+                calculate: "Calculate",
+                note: "Note: The calculation determines the moment of no current starting from 21:30. Data is provided by the Port Authority of Chalcis. The calculation is not an exact science and does not guarantee the Old Euripus Bridge will open at the indicated time.",
+                olneCalendarNote: "According to the calendar published on August 8 by OLNE, the bridge will now open on MONDAY, WEDNESDAY, FRIDAY, and SUNDAY. It will also open on Thursday, August 14, 2025.",
+                earlyMorningNote: "Additional note: on days close to the full moon, if the calculated time is after 03:00, it is common for the opening time to be brought forward to around 22:00 (10:00 PM).",
+                infoTitle: "More Information",
+                infoContent: `For a detailed explanation of the tidal phenomenon in the Euripus, visit <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">this page</a>. Check the official timetable of the Old Euripus Bridge at <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">the official website</a>.`,
+                aboutTitle: "About the Old Euripus Bridge",
+                aboutContent: "The Old Euripus Bridge in Chalcis, Greece, is famous for its unique tides, which change up to 14 times a day due to the Euripus phenomenon. Use our calculator to plan your visit and learn the no-current times.",
+                lastNewMoon: "Last New Moon",
+                lastFullMoon: "Last Full Moon",
+                nextFullMoon: "Next Full Moon",
+                daysSinceNewMoon: "Days since the last new moon",
+                bridgeOpeningTime: "Old Euripus Bridge opening time",
+                invalidDateFormat: "Invalid date format. Use d/m/yyyy (example: 12/6/2025).",
+                noLunarData: "No lunar phase data available for this date.",
+                irregularStream: "Irregular stream or no data for this day in the lunar cycle.",
+                refTimeNotFound: "Reference time not found in any interval.",
+                saturdayWarning: "Note: The Old Euripus Bridge does not open on Saturdays, although the calculated time is shown.",
+                nonOperatingDay: "Note: The Old Euripus Bridge does not open on the selected date (Tuesday, Thursday, or Saturday, except August 14, 2025).",
+                footerText: "Data provided by the <a href='https://olne.gr' target='_blank' class='text-blue-600 hover:underline'>Port Authority of Chalcis</a>. Last updated: June 15, 2025 at 07:30 PM EEST."
+            },
+            el: {
+                metaDescription: "Υπολογίστε τη στιγμή χωρίς ρεύμα στη Παλαιά Γέφυρα του Ευρίπου στη Χαλκίδα με το δωρεάν μας εργαλείο, βασισμένο σε δεδομένα της Λιμενικής Αρχής. Διαθέσιμο στα Ισπανικά, Αγγλικά και Ελληνικά.",
+                title: "Υπολογιστής Ανοίγματος της Παλαιάς Γέφυρας του Ευρίπου",
+                dateLabel: "Εισαγάγετε την ημερομηνία (η/μ/χχχχ):",
+                calculate: "Υπολογισμός",
+                note: "Σημείωση: Ο υπολογισμός καθορίζει τη στιγμή που δεν υπάρχει ρεύμα από τις 21:30. Τα δεδομένα προέρχονται από την Λιμενική Αρχή Χαλκίδας. Ο υπολογισμός δεν είναι ακριβής επιστήμη και δεν εγγυάται ότι η Παλαιά Γέφυρα του Ευρίπου θα ανοίξει στην υποδεικνυόμενη ώρα.",
+                olneCalendarNote: "Σύμφωνα με το ημερολόγιο που δημοσιεύτηκε στις 8 Αυγούστου από την OLNE, η γέφυρα θα ανοίγει πλέον ΔΕΥΤΕΡΑ, ΤΕΤΑΡΤΗ, ΠΑΡΑΣΚΕΥΗ και ΚΥΡΙΑΚΗ. Επίσης θα ανοίξει την Πέμπτη 14 Αυγούστου 2025.",
+                earlyMorningNote: "Επιπλέον σημείωση: τις ημέρες κοντά στην πανσέληνο, αν η υπολογισμένη ώρα είναι μετά τις 03:00, είναι συνηθισμένο η ώρα ανοίγματος να μεταφερθεί νωρίτερα περίπου στις 22:00 (10:00 μ.μ.).",
+                infoTitle: "Περισσότερες Πληροφορίες",
+                infoContent: `Για μια λεπτομερή εξήγηση του φαινομένου των παλιρροιών στον Εύριπο, επισκεφθείτε <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">αυτήν την σελίδα</a>. Ελέγξτε το επίσημο πρόγραμμα της Παλαιάς Γέφυρας του Ευρίπου στον <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">επίσημο ιστότοπο</a>.`,
+                aboutTitle: "Σχετικά με την Παλαιά Γέφυρα του Ευρίπου",
+                aboutContent: "Η Παλαιά Γέφυρα του Ευρίπου στη Χαλκίδα, Ελλάδα, είναι διάσημη για τις μοναδικές της παλίρροιες, που αλλάζουν έως και 14 φορές την ημέρα λόγω του φαινομένου του Ευρίπου. Χρησιμοποιήστε τον υπολογιστή μας για να προγραμματίσετε την επίσκεψή σας και να μάθετε τις ώρες χωρίς ρεύμα.",
+                lastNewMoon: "Τελευταία Νέα Σελήνη",
+                lastFullMoon: "Τελευταία Πανσέληνος",
+                nextFullMoon: "Επόμενη Πανσέληνος",
+                daysSinceNewMoon: "Ημέρες από την τελευταία νέα σελήνη",
+                bridgeOpeningTime: "Ώρα ανοίγματος της Παλαιάς Γέφυρας του Ευρίπου",
+                invalidDateFormat: "Μη έγκυρη μορφή ημερομηνίας. Χρησιμοποιήστε η/μ/χχχχ (παράδειγμα: 12/6/2025).",
+                noLunarData: "Δεν υπάρχουν διαθέσιμα δεδομένα φάσεων σελήνης για αυτήν την ημερομηνία.",
+                irregularStream: "Ακανόνιστο ρεύμα ή έλλειψη δεδομένων για αυτήν την ημέρα στον σεληνιακό κύκλο.",
+                refTimeNotFound: "Η ώρα αναφοράς δεν βρέθηκε σε κανένα διάστημα.",
+                saturdayWarning: "Σημείωση: Η Παλαιά Γέφυρα του Ευρίπου δεν ανοίγει τα Σάββατα, αν και η υπολογισμένη ώρα εμφανίζεται.",
+                nonOperatingDay: "Σημείωση: Η Παλαιά Γέφυρα του Ευρίπου δεν ανοίγει την επιλεγμένη ημερομηνία (Τρίτη, Πέμπτη ή Σάββατο, εκτός από τις 14 Αυγούστου 2025).",
+                footerText: "Τα δεδομένα παρέχονται από την <a href='https://olne.gr' target='_blank' class='text-blue-600 hover:underline'>Λιμενική Αρχή Χαλκίδας</a>. Τελευταία ενημέρωση: 15 Ιουνίου 2025 στις 07:30 μ.μ. EEST."
+            }
         };
 
-        if (isSaturday) {
-            result.message = langData[currentLang].saturdayWarning;
-        } else if (isSummerWednesday) {
-            return langData[currentLang].summerWednesday;
+        let currentLang = "es";
+
+        // Cambiar idioma
+        function changeLanguage() {
+            currentLang = document.getElementById("language").value;
+            document.documentElement.lang = currentLang;
+            document.querySelector('meta[name="description"]').content = langData[currentLang].metaDescription;
+            document.getElementById("title").textContent = langData[currentLang].title;
+            document.getElementById("dateLabel").textContent = langData[currentLang].dateLabel;
+            document.getElementById("calculateBtn").textContent = langData[currentLang].calculate;
+            document.getElementById("note").innerHTML = langData[currentLang].note; // Solo la nota principal
+            document.getElementById("infoTitle").textContent = langData[currentLang].infoTitle;
+            document.getElementById("infoContent").innerHTML = langData[currentLang].infoContent;
+            document.getElementById("aboutTitle").textContent = langData[currentLang].aboutTitle;
+            document.getElementById("aboutContent").innerHTML = langData[currentLang].aboutContent;
+            document.getElementById("footerText").innerHTML = langData[currentLang].footerText;
+            const resultDiv = document.getElementById("result");
+            if (resultDiv.innerHTML) calculate();
         }
 
-        return result;
-    }
+        // Añadir event listeners
+        document.getElementById("calculateBtn").addEventListener("click", calculate);
+        document.getElementById("language").addEventListener("change", changeLanguage);
 
-    // Manejar botón de cálculo
-    function calculate() {
-        const dateInput = document.getElementById("dateInput").value;
-        const result = calculateBridgeOpening(dateInput);
-        const resultDiv = document.getElementById("result");
-        
-        if (typeof result === "string") {
-            resultDiv.innerHTML = `<p class="error">${result}</p>`;
-        } else {
-            let html = `
-                <p><strong>${langData[currentLang].lastNewMoon}:</strong> ${result.lastNewMoon}</p>
-                <p><strong>${langData[currentLang].lastFullMoon}:</strong> ${result.lastFullMoon}</p>
-                <p><strong>${langData[currentLang].nextFullMoon}:</strong> ${result.nextFullMoon}</p>
-                <p><strong>${langData[currentLang].daysSinceNewMoon}:</strong> ${result.daysSinceNewMoon}</p>
-                <p><strong class="highlight">${langData[currentLang].bridgeOpeningTime}:</strong> ${result.bridgeOpeningTime}</p>
-            `;
-            if (result.message) {
-                html += `<p class="error">${result.message}</p>`;
-            }
-
-            // Nota OLNE siempre visible
-            html += `<p class="note small">${langData[currentLang].olneCalendarNote}</p>`;
-
-            // Si la hora calculada está en madrugada después de las 03:00 (03:00-05:59),
-            // mostrar la nota adicional (días próximos a luna llena)
-            // bridgeOpeningTime tiene formato "HH:MM (EET)" o "HH:MM (EEST)"
-            const timeMatch = result.bridgeOpeningTime.match(/^(\d{2}):(\d{2})/);
-            if (timeMatch) {
-                const hour = parseInt(timeMatch[1], 10);
-                // Consideramos "después de las 03:00" como horas >=3 y <6 (03:00..05:59)
-                if (hour >= 3 && hour < 6) {
-                    html += `<p class="note small">${langData[currentLang].earlyMorningNote}</p>`;
-                }
-            }
-
-            resultDiv.innerHTML = html;
-        }
-    }
-
-    // Datos de idioma (añadidos olneCalendarNote y earlyMorningNote)
-    const langData = {
-        es: {
-            metaDescription: "Calcula el momento sin corriente del Puente Viejo de Euripo en Chalkida con nuestra herramienta gratuita, basada en datos de la Port Authority. Disponible en español, inglés y griego.",
-            title: "Calculadora de Apertura del Puente Viejo de Euripo",
-            dateLabel: "Introduce la fecha (d/m/yyyy):",
-            calculate: "Calcular",
-            note: "Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida. El cálculo no es una ciencia exacta y no garantiza que el Puente Viejo de Euripo abra a la hora indicada.",
-            // Nueva nota sobre calendario OLNE y nota para horas madrugada
-            olneCalendarNote: "Según el calendario publicado el 8 de agosto por OLNE, el puente abrirá a partir de ahora LUNES, MIÉRCOLES, VIERNES y DOMINGO. También abrirá el jueves 14 de agosto.",
-            earlyMorningNote: "Nota adicional: en los días cercanos a la luna llena, si la hora calculada es después de las 03:00, es frecuente que la hora de apertura se adelante hacia aproximadamente las 22:00 (10:00 PM).",
-            infoTitle: "Más Información",
-            infoContent: `Para una explicación detallada del fenómeno de las mareas en el Euripo, visita <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">esta página</a>. Consulta el horario oficial del Puente Viejo de Euripo en <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">la página oficial</a>.`,
-            aboutTitle: "Acerca del Puente Viejo de Euripo",
-            aboutContent: "El Puente Viejo de Euripo en Chalkida, Grecia, es famoso por sus mareas únicas, que cambian hasta 14 veces al día debido al fenómeno del Euripo. Usa nuestra calculadora para planificar tu visita y conocer los horarios sin corriente.",
-            lastNewMoon: "Última luna nueva",
-            lastFullMoon: "Última luna llena",
-            nextFullMoon: "Próxima luna llena",
-            daysSinceNewMoon: "Días desde la última luna nueva",
-            bridgeOpeningTime: "Hora de apertura del Puente Viejo de Euripo",
-            invalidDateFormat: "Formato de fecha inválido. Usa d/m/yyyy (ejemplo: 12/6/2025).",
-            noLunarData: "No hay datos de fases lunares para esta fecha.",
-            irregularStream: "Corriente irregular o sin datos para este día en el ciclo lunar.",
-            refTimeNotFound: "Hora de referencia no encontrada en ningún intervalo.",
-            saturdayWarning: "Nota: Los sábados el Puente Viejo de Euripo no abre, aunque la hora calculada es la indicada.",
-            summerWednesday: "Nota: Los miércoles entre el 1 de junio y el 30 de septiembre el Puente Viejo de Euripo no abre.",
-            footerText: "Datos proporcionados por la <a href='https://olne.gr' target='_blank' class='text-blue-600 hover:underline'>Port Authority de Chalkida</a>. Última actualización: 15 de junio de 2025 a las 07:30 PM EEST."
-        },
-        en: {
-            metaDescription: "Calculate the no-current time at the Old Euripus Bridge in Chalcis with our free tool, based on Port Authority data. Available in Spanish, English, and Greek.",
-            title: "Old Euripus Bridge Opening Calculator",
-            dateLabel: "Enter the date (d/m/yyyy):",
-            calculate: "Calculate",
-            note: "Note: The calculation determines the moment of no current starting from 21:30. Data is provided by the Port Authority of Chalcis. The calculation is not an exact science and does not guarantee the Old Euripus Bridge will open at the indicated time.",
-            olneCalendarNote: "According to the calendar published on August 8 by OLNE, the bridge will now open on MONDAY, WEDNESDAY, FRIDAY and SUNDAY. It will also open on Thursday, August 14.",
-            earlyMorningNote: "Additional note: on days close to the full moon, if the calculated time is after 03:00, it is common for the opening time to be brought forward to around 22:00 (10:00 PM).",
-            infoTitle: "More Information",
-            infoContent: `For a detailed explanation of the tidal phenomenon in the Euripus, visit <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">this page</a>. Check the official timetable of the Old Euripus Bridge at <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">the official website</a>.`,
-            aboutTitle: "About the Old Euripus Bridge",
-            aboutContent: "The Old Euripus Bridge in Chalcis, Greece, is famous for its unique tides, which change up to 14 times a day due to the Euripus phenomenon. Use our calculator to plan your visit and learn the no-current times.",
-            lastNewMoon: "Last New Moon",
-            lastFullMoon: "Last Full Moon",
-            nextFullMoon: "Next Full Moon",
-            daysSinceNewMoon: "Days since the last new moon",
-            bridgeOpeningTime: "Old Euripus Bridge opening time",
-            invalidDateFormat: "Invalid date format. Use d/m/yyyy (example: 12/6/2025).",
-            noLunarData: "No lunar phase data available for this date.",
-            irregularStream: "Irregular stream or no data for this day in the lunar cycle.",
-            refTimeNotFound: "Reference time not found in any interval.",
-            saturdayWarning: "Note: The Old Euripus Bridge does not open on Saturdays, although the calculated time is shown.",
-            summerWednesday: "Note: The Old Euripus Bridge does not open on Wednesdays between June 1 and September 30.",
-            footerText: "Data provided by the <a href='https://olne.gr' target='_blank' class='text-blue-600 hover:underline'>Port Authority of Chalcis</a>. Last updated: June 15, 2025 at 07:30 PM EEST."
-        },
-        el: {
-            metaDescription: "Υπολογίστε τη στιγμή χωρίς ρεύμα στη Παλαιά Γέφυρα του Ευρίπου στη Χαλκίδα με το δωρεάν μας εργαλείο, βασισμένο σε δεδομένα της Λιμενικής Αρχής. Διαθέσιμο στα Ισπανικά, Αγγλικά και Ελληνικά.",
-            title: "Υπολογιστής Ανοίγματος της Παλαιάς Γέφυρας του Ευρίπου",
-            dateLabel: "Εισαγάγετε την ημερομηνία (η/μ/χχχχ):",
-            calculate: "Υπολογισμός",
-            note: "Σημείωση: Ο υπολογισμός καθορίζει τη στιγμή που δεν υπάρχει ρεύμα από τις 21:30. Τα δεδομένα προέρχονται από την Λιμενική Αρχή Χαλκίδας. Ο υπολογισμός δεν είναι ακριβής επιστήμη και δεν εγγυάται ότι η Παλαιά Γέφυρα του Ευρίπου θα ανοίξει στην υποδεικνυόμενη ώρα.",
-            olneCalendarNote: "Σύμφωνα με το ημερολόγιο που δημοσιεύτηκε στις 8 Αυγούστου από την OLNE, η γέφυρα θα ανοίγει πλέον ΔΕΥΤΕΡΑ, ΤΕΤΑΡΤΗ, ΠΑΡΑΣΚΕΥΗ και ΚΥΡΙΑΚΗ. Επίσης θα ανοίξει την Πέμπτη 14 Αυγούστου.",
-            earlyMorningNote: "Επιπλέον σημείωση: τις ημέρες κοντά στην πανσέληνο, αν η υπολογισμένη ώρα είναι μετά τις 03:00, είναι συνηθισμένο η ώρα ανοίγματος να μεταφερθεί νωρίτερα περίπου στις 22:00 (10:00 μ.μ.).",
-            infoTitle: "Περισσότερες Πληροφορίες",
-            infoContent: `Για μια λεπτομερή εξήγηση του φαινομένου των παλιρροιών στον Εύριπο, επισκεφθείτε <a href="https://www.antonios-antoniou.gr/en/tides-and-the-euripus-phenomenon" target="_blank" class="text-blue-600 hover:underline">αυτήν την σελίδα</a>. Ελέγξτε το επίσημο πρόγραμμα της Παλαιάς Γέφυρας του Ευρίπου στον <a href="https://olne.gr/en/commercial-ports/chalkida-port/133-gefira-evripou/445-old-evripos-bridge-timetable" target="_blank" class="text-blue-600 hover:underline">επίσημο ιστότοπο</a>.`,
-            aboutTitle: "Σχετικά με την Παλαιά Γέφυρα του Ευρίπου",
-            aboutContent: "Η Παλαιά Γέφυρα του Ευρίπου στη Χαλκίδα, Ελλάδα, είναι διάσημη για τις μοναδικές της παλίρροιες, που αλλάζουν έως και 14 φορές την ημέρα λόγω του φαινομένου του Ευρίπου. Χρησιμοποιήστε τον υπολογιστή μας για να προγραμματίσετε την επίσκεψή σας και να μάθετε τις ώρες χωρίς ρεύμα.",
-            lastNewMoon: "Τελευταία Νέα Σελήνη",
-            lastFullMoon: "Τελευταία Πανσέληνος",
-            nextFullMoon: "Επόμενη Πανσέληνος",
-            daysSinceNewMoon: "Ημέρες από την τελευταία νέα σελήνη",
-            bridgeOpeningTime: "Ώρα ανοίγματος της Παλαιάς Γέφυρας του Ευρίπου",
-            invalidDateFormat: "Μη έγκυρη μορφή ημερομηνίας. Χρησιμοποιήστε η/μ/χχχχ (παράδειγμα: 12/6/2025).",
-            noLunarData: "Δεν υπάρχουν διαθέσιμα δεδομένα φάσεων σελήνης για αυτήν την ημερομηνία.",
-            irregularStream: "Ακανόνιστο ρεύμα ή έλλειψη δεδομένων για αυτήν την ημέρα στον σεληνιακό κύκλο.",
-            refTimeNotFound: "Η ώρα αναφοράς δεν βρέθηκε σε κανένα διάστημα.",
-            saturdayWarning: "Σημείωση: Η Παλαιά Γέφυρα του Ευρίπου δεν ανοίγει τα Σάββατα, αν και η υπολογισμένη ώρα εμφανίζεται.",
-            summerWednesday: "Σημείωση: Η Παλαιά Γέφυρα του Ευρίπου δεν ανοίγει τις Τετάρτες από 1 Ιουνίου έως 30 Σεπτεμβρίου.",
-            footerText: "Τα δεδομένα παρέχονται από την <a href='https://olne.gr' target='_blank' class='text-blue-600 hover:underline'>Λιμενική Αρχή Χαλκίδας</a>. Τελευταία ενημέρωση: 15 Ιουνίου 2025 στις 07:30 μ.μ. EEST."
-        }
-    };
-
-    let currentLang = "es";
-
-    // Cambiar idioma
-    function changeLanguage() {
-        currentLang = document.getElementById("language").value;
-        document.documentElement.lang = currentLang;
-        document.querySelector('meta[name="description"]').content = langData[currentLang].metaDescription;
-        document.getElementById("title").textContent = langData[currentLang].title;
-        document.getElementById("dateLabel").textContent = langData[currentLang].dateLabel;
-        document.getElementById("calculateBtn").textContent = langData[currentLang].calculate;
-        // Nota principal + nota OLNE en el área "note"
-        document.getElementById("note").innerHTML = `${langData[currentLang].note}<br><small class="note">${langData[currentLang].olneCalendarNote}</small>`;
-        document.getElementById("infoTitle").textContent = langData[currentLang].infoTitle;
-        document.getElementById("infoContent").innerHTML = langData[currentLang].infoContent;
-        document.getElementById("aboutTitle").textContent = langData[currentLang].aboutTitle;
-        document.getElementById("aboutContent").innerHTML = langData[currentLang].aboutContent;
-        document.getElementById("footerText").innerHTML = langData[currentLang].footerText;
-        const resultDiv = document.getElementById("result");
-        if (resultDiv.innerHTML) calculate();
-    }
-
-    // Añadir event listeners
-    document.getElementById("calculateBtn").addEventListener("click", calculate);
-    document.getElementById("language").addEventListener("change", changeLanguage);
-
-    // Inicializar contenido al cargar la página
-    window.onload = function() {
-        // Aplicar idioma inicial y mostrar nota + nota OLNE
-        changeLanguage(); // Asegurar que el idioma inicial se aplique y muestre la nota OLNE
-    };
-</script>
+        // Inicializar contenido al cargar la página
+        window.onload = function() {
+            changeLanguage(); // Aplicar idioma inicial
+        };
+    </script>
 </body>
 </html>
