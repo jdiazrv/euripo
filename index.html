@@ -275,19 +275,6 @@
       font-size: 0.9rem;
     }
 
-    .result-meta {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin: 6px 0 10px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(15, 118, 110, 0.08);
-      color: var(--primary);
-      font-size: 0.88rem;
-      font-weight: 700;
-    }
-
     .result-box {
       margin-top: 22px;
       padding: 18px;
@@ -500,11 +487,6 @@
         nextFullMoon: "Próxima luna llena",
         daysSinceNewMoon: "Días desde la última luna nueva",
         bridgeOpeningTime: "Hora calculada",
-        cycleReference: "Fila usada",
-        cycleLabelNewMoon: "Luna nueva",
-        cycleLabelFullMoon: "Luna llena",
-        cycleLabelBeforeFull: "Luna llena - {n}",
-        cycleLabelAfterFull: "Luna llena + {n}",
         invalidDateFormat: "Formato de fecha inválido. Usa d/m/yyyy (ejemplo: 12/6/2025).",
         noLunarData: "No hay datos de fases lunares para esta fecha.",
         irregularStream: "Corriente irregular o sin datos para este día en el ciclo lunar.",
@@ -545,11 +527,6 @@
         nextFullMoon: "Next Full Moon",
         daysSinceNewMoon: "Days since the last new moon",
         bridgeOpeningTime: "Calculated time",
-        cycleReference: "Table row used",
-        cycleLabelNewMoon: "New Moon",
-        cycleLabelFullMoon: "Full Moon",
-        cycleLabelBeforeFull: "Full Moon - {n}",
-        cycleLabelAfterFull: "Full Moon + {n}",
         invalidDateFormat: "Invalid date format. Use d/m/yyyy (example: 12/6/2025).",
         noLunarData: "No lunar phase data available for this date.",
         irregularStream: "Irregular stream or no data for this day in the lunar cycle.",
@@ -590,11 +567,6 @@
         nextFullMoon: "Επόμενη Πανσέληνος",
         daysSinceNewMoon: "Ημέρες από την τελευταία νέα σελήνη",
         bridgeOpeningTime: "Υπολογισμένη ώρα",
-        cycleReference: "Γραμμή πίνακα",
-        cycleLabelNewMoon: "Νέα Σελήνη",
-        cycleLabelFullMoon: "Πανσέληνος",
-        cycleLabelBeforeFull: "Πανσέληνος - {n}",
-        cycleLabelAfterFull: "Πανσέληνος + {n}",
         invalidDateFormat: "Μη έγκυρη μορφή ημερομηνίας. Χρησιμοποιήστε η/μ/χχχχ (παράδειγμα: 12/6/2025).",
         noLunarData: "Δεν υπάρχουν διαθέσιμα δεδομένα φάσεων σελήνης για αυτήν την ημερομηνία.",
         irregularStream: "Ακανόνιστο ρεύμα ή έλλειψη δεδομένων για αυτήν την ημέρα στον σεληνιακό κύκλο.",
@@ -683,18 +655,6 @@
         hour: "2-digit",
         minute: "2-digit"
       });
-    }
-
-    function getCycleReferenceLabel(daysSinceNewMoon) {
-      const t = langData[currentLang];
-
-      if (daysSinceNewMoon === 0) return `N=0 · ${t.cycleLabelNewMoon}`;
-      if (daysSinceNewMoon === 15) return `N=15 · ${t.cycleLabelFullMoon}`;
-      if (daysSinceNewMoon < 15) {
-        return `N=${daysSinceNewMoon} · ${t.cycleLabelBeforeFull.replace("{n}", String(15 - daysSinceNewMoon))}`;
-      }
-
-      return `N=${daysSinceNewMoon} · ${t.cycleLabelAfterFull.replace("{n}", String(daysSinceNewMoon - 15))}`;
     }
 
     function buildReferenceDateTime(date, referenceTime = "21:30") {
@@ -899,8 +859,7 @@
           lastFullMoon: formatDateTime(lastFullMoon),
           nextFullMoon: formatDateTime(nextFullMoon),
           daysSinceNewMoon,
-          bridgeOpeningTime: timeResult.value,
-          cycleReference: getCycleReferenceLabel(daysSinceNewMoon)
+          bridgeOpeningTime: timeResult.value
         },
         notes
       };
@@ -931,7 +890,6 @@
       resultDiv.innerHTML = `
         <div class="result-box ${result.status}">
           <p class="result-title">${icon} ${result.title}</p>
-          <p class="result-meta"><strong>${langData[currentLang].cycleReference}:</strong> ${result.data.cycleReference}</p>
           <p><strong>${langData[currentLang].lastNewMoon}:</strong> ${result.data.lastNewMoon}</p>
           <p><strong>${langData[currentLang].lastFullMoon}:</strong> ${result.data.lastFullMoon}</p>
           <p><strong>${langData[currentLang].nextFullMoon}:</strong> ${result.data.nextFullMoon}</p>
