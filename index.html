@@ -581,7 +581,7 @@
     function parseDate(input) {
       if (typeof input !== "string") return null;
 
-      const trimmed = input.trim();
+      const trimmed = input.replace(/_/g, "").trim();
       const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
       const match = trimmed.match(regex);
 
@@ -953,13 +953,44 @@
       }
 
       const dateInput = document.getElementById("dateInput");
-      dateInput.addEventListener("input", (e) => {
-        const prev = e.target.value;
-        const digits = prev.replace(/\D/g, "").slice(0, 8);
-        let masked = digits;
-        if (digits.length > 2) masked = digits.slice(0, 2) + "/" + digits.slice(2);
-        if (digits.length > 4) masked = digits.slice(0, 2) + "/" + digits.slice(2, 4) + "/" + digits.slice(4);
-        e.target.value = masked;
+
+      function maskFromDigits(digits) {
+        const d = (digits + "________").slice(0, 8);
+        return `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4, 8)}`;
+      }
+
+      function digitsOnly(val) {
+        return val.replace(/\D/g, "");
+      }
+
+      function placeCursor(input) {
+        const pos = input.value.indexOf("_");
+        input.setSelectionRange(pos !== -1 ? pos : 10, pos !== -1 ? pos : 10);
+      }
+
+      dateInput.addEventListener("focus", () => {
+        if (dateInput.value === "") dateInput.value = maskFromDigits("");
+        setTimeout(() => placeCursor(dateInput), 0);
+      });
+
+      dateInput.addEventListener("blur", () => {
+        if (digitsOnly(dateInput.value) === "") dateInput.value = "";
+      });
+
+      dateInput.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace") {
+          e.preventDefault();
+          const newDigits = digitsOnly(dateInput.value).slice(0, -1);
+          dateInput.value = maskFromDigits(newDigits);
+          placeCursor(dateInput);
+        } else if (/^\d$/.test(e.key)) {
+          e.preventDefault();
+          const digits = digitsOnly(dateInput.value);
+          if (digits.length < 8) {
+            dateInput.value = maskFromDigits(digits + e.key);
+            placeCursor(dateInput);
+          }
+        }
       });
 
       form.addEventListener("submit", (event) => {
