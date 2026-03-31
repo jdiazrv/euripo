@@ -3,11 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="author" content="Juan Diaz" />
+  <meta name="theme-color" content="#0f766e" />
   <meta
     name="description"
     content="Calcula el momento sin corriente del Puente Viejo de Euripo en Chalkida con nuestra herramienta gratuita, basada en datos de la Port Authority. Disponible en español, inglés y griego."
   />
   <title>Calculadora de Apertura del Puente Viejo de Euripo - Chalkida</title>
+  <link rel="canonical" href="https://euripo.netlify.app/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Euripo Bridge Calculator" />
+  <meta property="og:title" content="Calculadora de Apertura del Puente Viejo de Euripo - Chalkida" />
+  <meta property="og:description" content="Calcula el momento sin corriente del Puente Viejo de Euripo en Chalkida con nuestra herramienta gratuita, basada en datos de la Port Authority. Disponible en español, inglés y griego." />
+  <meta property="og:url" content="https://euripo.netlify.app/" />
+  <meta property="og:image" content="https://euripo.netlify.app/euripobridge.jpg" />
+  <meta property="og:image:alt" content="Puente Viejo de Euripo en Chalkida, Grecia" />
+  <meta property="og:locale" content="es_ES" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Calculadora de Apertura del Puente Viejo de Euripo - Chalkida" />
+  <meta name="twitter:description" content="Calcula el momento sin corriente del Puente Viejo de Euripo en Chalkida con nuestra herramienta gratuita, basada en datos de la Port Authority. Disponible en español, inglés y griego." />
+  <meta name="twitter:image" content="https://euripo.netlify.app/euripobridge.jpg" />
 
   <link rel="alternate" hreflang="es" href="https://euripo.netlify.app/" />
   <link rel="alternate" hreflang="en" href="https://euripo.netlify.app/?lang=en" />
@@ -160,6 +178,12 @@
     .language-link[aria-current="true"] {
       background: var(--primary-soft);
       color: var(--primary);
+    }
+
+    .language-flag {
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      line-height: 1;
     }
 
     h2 {
@@ -325,6 +349,36 @@
       font-size: 1rem;
     }
 
+    .faq-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.72);
+      overflow: hidden;
+    }
+
+    .faq-item summary {
+      cursor: pointer;
+      list-style: none;
+      font-weight: 700;
+      padding: 16px 18px;
+    }
+
+    .faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-item p {
+      margin: 0;
+      padding: 0 18px 16px;
+      color: var(--muted);
+    }
+
     a {
       color: var(--link);
     }
@@ -386,6 +440,7 @@
   </script>
 </head>
 <body>
+  <script type="application/ld+json" id="structuredData"></script>
   <div class="container">
     <main>
       <section aria-label="Calculadora del Puente Viejo de Euripo">
@@ -402,9 +457,15 @@
               <div class="language-switcher">
                 <span class="language-switcher-label" id="languageLabel">Idioma</span>
                 <nav class="language-links" aria-label="Selector de idioma">
-                  <a class="language-link" id="lang-es" href="./" data-lang="es" lang="es" hreflang="es">ES</a>
-                  <a class="language-link" id="lang-en" href="?lang=en" data-lang="en" lang="en" hreflang="en">EN</a>
-                  <a class="language-link" id="lang-el" href="?lang=el" data-lang="el" lang="el" hreflang="el">EL</a>
+                  <a class="language-link" id="lang-es" href="./" data-lang="es" lang="es" hreflang="es" aria-label="Español">
+                    <span class="language-flag" aria-hidden="true">ES</span>
+                  </a>
+                  <a class="language-link" id="lang-en" href="?lang=en" data-lang="en" lang="en" hreflang="en" aria-label="English">
+                    <span class="language-flag" aria-hidden="true">EN</span>
+                  </a>
+                  <a class="language-link" id="lang-el" href="?lang=el" data-lang="el" lang="el" hreflang="el" aria-label="Ελληνικά">
+                    <span class="language-flag" aria-hidden="true">EL</span>
+                  </a>
                 </nav>
               </div>
             </div>
@@ -446,6 +507,9 @@
 
           <h2 id="infoTitle" style="margin-top: 20px;">Más Información</h2>
           <p id="infoContent"></p>
+
+          <h2 id="faqTitle" style="margin-top: 20px;">Preguntas frecuentes</h2>
+          <div id="faqContent" class="faq-list"></div>
         </div>
       </section>
     </main>
@@ -464,6 +528,7 @@
       es: {
         metaDescription:
           "Calcula el momento sin corriente del Puente Viejo de Euripo en Chalkida con nuestra herramienta gratuita, basada en datos de la Port Authority. Disponible en español, inglés y griego.",
+        pageTitle: "Calculadora del Puente Viejo de Euripo en Chalkida | Hora sin corriente",
         title: "Calculadora de Apertura del Puente Viejo de Euripo",
         lede:
           "Consulta el momento de calma de corriente para planificar el cruce del Puente Viejo de Euripo.",
@@ -482,6 +547,21 @@
         aboutTitle: "Acerca del Puente Viejo de Euripo",
         aboutContent:
           "El Puente Viejo de Euripo en Chalkida, Grecia, es famoso por sus mareas únicas, que cambian hasta 14 veces al día debido al fenómeno del Euripo. Usa nuestra calculadora para planificar tu visita y conocer los horarios sin corriente.",
+        faqTitle: "Preguntas frecuentes sobre el Puente Viejo de Euripo",
+        faqItems: [
+          {
+            question: "¿Qué calcula exactamente esta herramienta?",
+            answer: "La calculadora estima la hora de calma de corriente del Puente Viejo de Euripo a partir de las 21:30, usando datos de fases lunares y la tabla de referencia publicada para Chalkida."
+          },
+          {
+            question: "¿La hora calculada garantiza que el puente vaya a abrir?",
+            answer: "No. El resultado sirve como orientación para navegación y planificación, pero la apertura real depende de la autoridad portuaria, del tráfico y de avisos operativos de OLNE."
+          },
+          {
+            question: "¿Qué días suele abrir el puente para navegación?",
+            answer: "Según la información operativa actual mostrada en la página, el Puente Viejo de Euripo abre habitualmente lunes, miércoles, viernes y domingos, salvo cambios oficiales puntuales."
+          }
+        ],
         lastNewMoon: "Última luna nueva",
         lastFullMoon: "Última luna llena",
         nextFullMoon: "Próxima luna llena",
@@ -504,6 +584,7 @@
       en: {
         metaDescription:
           "Calculate the no-current time at the Old Euripus Bridge in Chalcis with our free tool, based on Port Authority data. Available in Spanish, English, and Greek.",
+        pageTitle: "Old Euripus Bridge Calculator in Chalcis | Slack Water Time",
         title: "Old Euripus Bridge Opening Calculator",
         lede:
           "Check the slack-water moment to better plan your passage through the Old Euripus Bridge.",
@@ -522,6 +603,21 @@
         aboutTitle: "About the Old Euripus Bridge",
         aboutContent:
           "The Old Euripus Bridge in Chalcis, Greece, is famous for its unique tides, which change up to 14 times a day due to the Euripus phenomenon. Use our calculator to plan your visit and learn the no-current times.",
+        faqTitle: "Old Euripus Bridge FAQ",
+        faqItems: [
+          {
+            question: "What does this calculator estimate?",
+            answer: "It estimates the slack-water time for the Old Euripus Bridge from 21:30 onward, using lunar phase data and the reference timing table used for Chalcis."
+          },
+          {
+            question: "Does the calculated time guarantee that the bridge will open?",
+            answer: "No. The result is a planning aid only. Actual bridge opening depends on the port authority, local traffic, and any operational notices published by OLNE."
+          },
+          {
+            question: "On which days does the bridge usually open for navigation?",
+            answer: "According to the current operating information shown on this page, the bridge usually opens on Monday, Wednesday, Friday, and Sunday unless OLNE publishes a temporary change."
+          }
+        ],
         lastNewMoon: "Last New Moon",
         lastFullMoon: "Last Full Moon",
         nextFullMoon: "Next Full Moon",
@@ -544,6 +640,7 @@
       el: {
         metaDescription:
           "Υπολογίστε τη στιγμή χωρίς ρεύμα στη Παλαιά Γέφυρα του Ευρίπου στη Χαλκίδα με το δωρεάν μας εργαλείο, βασισμένο σε δεδομένα της Λιμενικής Αρχής. Διαθέσιμο στα Ισπανικά, Αγγλικά και Ελληνικά.",
+        pageTitle: "Υπολογιστής Παλαιάς Γέφυρας Ευρίπου στη Χαλκίδα | Ώρα άπνοιας ρεύματος",
         title: "Υπολογιστής Ανοίγματος της Παλαιάς Γέφυρας του Ευρίπου",
         lede:
           "Δείτε τη στιγμή άπνοιας του ρεύματος για να προγραμματίσετε καλύτερα τη διέλευση από την Παλαιά Γέφυρα του Ευρίπου.",
@@ -562,6 +659,21 @@
         aboutTitle: "Σχετικά με την Παλαιά Γέφυρα του Ευρίπου",
         aboutContent:
           "Η Παλαιά Γέφυρα του Ευρίπου στη Χαλκίδα, Ελλάδα, είναι διάσημη για τις μοναδικές της παλίρροιες, που αλλάζουν έως και 14 φορές την ημέρα λόγω του φαινομένου του Ευρίπου. Χρησιμοποιήστε τον υπολογιστή μας για να προγραμματίσετε την επίσκεψή σας και να μάθετε τις ώρες χωρίς ρεύμα.",
+        faqTitle: "Συχνές ερωτήσεις για την Παλαιά Γέφυρα του Ευρίπου",
+        faqItems: [
+          {
+            question: "Τι ακριβώς υπολογίζει αυτό το εργαλείο;",
+            answer: "Ο υπολογιστής εκτιμά τη στιγμή άπνοιας του ρεύματος για την Παλαιά Γέφυρα του Ευρίπου μετά τις 21:30, με βάση τα δεδομένα των σεληνιακών φάσεων και τον πίνακα αναφοράς της Χαλκίδας."
+          },
+          {
+            question: "Η υπολογισμένη ώρα εγγυάται ότι η γέφυρα θα ανοίξει;",
+            answer: "Όχι. Το αποτέλεσμα είναι εργαλείο προγραμματισμού και όχι εγγύηση. Το πραγματικό άνοιγμα εξαρτάται από τη λιμενική αρχή, την κυκλοφορία και τυχόν επίσημες ανακοινώσεις της OLNE."
+          },
+          {
+            question: "Ποιες ημέρες ανοίγει συνήθως η γέφυρα για ναυσιπλοΐα;",
+            answer: "Σύμφωνα με τις τρέχουσες πληροφορίες λειτουργίας που εμφανίζονται στη σελίδα, η γέφυρα ανοίγει συνήθως Δευτέρα, Τετάρτη, Παρασκευή και Κυριακή, εκτός αν υπάρξει επίσημη προσωρινή αλλαγή από την OLNE."
+          }
+        ],
         lastNewMoon: "Τελευταία Νέα Σελήνη",
         lastFullMoon: "Τελευταία Πανσέληνος",
         nextFullMoon: "Επόμενη Πανσέληνος",
@@ -584,6 +696,13 @@
     };
 
     let currentLang = "es";
+
+    const SITE_URL = "https://euripo.netlify.app/";
+    const OG_LOCALES = {
+      es: "es_ES",
+      en: "en_GB",
+      el: "el_GR"
+    };
 
     const DAY_IN_MS = 1000 * 60 * 60 * 24;
     const NON_OPERATING_WEEKDAYS = [2, 4, 6];
@@ -655,6 +774,82 @@
         hour: "2-digit",
         minute: "2-digit"
       });
+    }
+
+    function getLanguageUrl(lang) {
+      return lang === "es" ? SITE_URL : `${SITE_URL}?lang=${lang}`;
+    }
+
+    function renderFaq() {
+      const faqContent = document.getElementById("faqContent");
+      const items = langData[currentLang].faqItems || [];
+
+      faqContent.innerHTML = items
+        .map(
+          (item) => `
+            <details class="faq-item">
+              <summary>${item.question}</summary>
+              <p>${item.answer}</p>
+            </details>
+          `
+        )
+        .join("");
+    }
+
+    function updateStructuredData() {
+      const t = langData[currentLang];
+      const schema = {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            name: "Euripo Bridge Calculator",
+            url: SITE_URL,
+            inLanguage: ["es", "en", "el"]
+          },
+          {
+            "@type": "WebApplication",
+            name: t.title,
+            url: getLanguageUrl(currentLang),
+            applicationCategory: "TravelApplication",
+            operatingSystem: "Web",
+            browserRequirements: "Requires JavaScript",
+            isAccessibleForFree: true,
+            inLanguage: currentLang,
+            description: t.metaDescription,
+            image: `${SITE_URL}euripobridge.jpg`
+          },
+          {
+            "@type": "FAQPage",
+            inLanguage: currentLang,
+            mainEntity: (t.faqItems || []).map((item) => ({
+              "@type": "Question",
+              name: item.question,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: item.answer
+              }
+            }))
+          }
+        ]
+      };
+
+      document.getElementById("structuredData").textContent = JSON.stringify(schema);
+    }
+
+    function updateSeoTags() {
+      const t = langData[currentLang];
+      const currentUrl = getLanguageUrl(currentLang);
+
+      document.title = t.pageTitle;
+      document.querySelector('meta[name="description"]').setAttribute("content", t.metaDescription);
+      document.querySelector('link[rel="canonical"]').setAttribute("href", currentUrl);
+      document.querySelector('meta[property="og:title"]').setAttribute("content", t.pageTitle);
+      document.querySelector('meta[property="og:description"]').setAttribute("content", t.metaDescription);
+      document.querySelector('meta[property="og:url"]').setAttribute("content", currentUrl);
+      document.querySelector('meta[property="og:locale"]').setAttribute("content", OG_LOCALES[currentLang]);
+      document.querySelector('meta[name="twitter:title"]').setAttribute("content", t.pageTitle);
+      document.querySelector('meta[name="twitter:description"]').setAttribute("content", t.metaDescription);
     }
 
     function buildReferenceDateTime(date, referenceTime = "21:30") {
@@ -911,7 +1106,6 @@
       const t = langData[currentLang];
 
       document.documentElement.lang = currentLang;
-      document.querySelector('meta[name="description"]').setAttribute("content", t.metaDescription);
       document.getElementById("title").textContent = t.title;
       document.getElementById("lede").textContent = t.lede;
       document.getElementById("languageLabel").textContent = t.languageLabel;
@@ -922,7 +1116,11 @@
       document.getElementById("infoContent").innerHTML = t.infoContent;
       document.getElementById("aboutTitle").textContent = t.aboutTitle;
       document.getElementById("aboutContent").textContent = t.aboutContent;
+      document.getElementById("faqTitle").textContent = t.faqTitle;
       document.getElementById("footerText").innerHTML = t.footerText;
+      renderFaq();
+      updateSeoTags();
+      updateStructuredData();
 
       document.querySelectorAll(".language-link").forEach((link) => {
         const isActive = link.dataset.lang === currentLang;
