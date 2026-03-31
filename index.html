@@ -738,7 +738,13 @@
       }
 
       const [refHour, refMinute] = referenceTime.split(":").map(Number);
-      const refMinutes = refHour * 60 + refMinute;
+      // The table is in EET (UTC+2). When DST is active (EEST, UTC+3),
+      // subtract 1 hour to convert the local reference time to EET for comparison.
+      let refMinutes = refHour * 60 + refMinute;
+      if (dstActive) {
+        refMinutes -= 60;
+        if (refMinutes < 0) refMinutes += 24 * 60;
+      }
 
       for (const interval of intervals) {
         const [start, end] = interval.split("-");
