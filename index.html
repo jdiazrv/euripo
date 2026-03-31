@@ -390,7 +390,7 @@
                 <input
                   type="text"
                   id="dateInput"
-                  placeholder="d/m/yyyy"
+                  placeholder="dd/mm/yyyy"
                   inputmode="numeric"
                   autocomplete="off"
                   aria-required="true"
@@ -436,7 +436,7 @@
         lede:
           "Consulta el momento de calma de corriente para planificar el cruce del Puente Viejo de Euripo.",
         languageLabel: "Idioma",
-        dateLabel: "Introduce la fecha (d/m/yyyy):",
+        dateLabel: "Introduce la fecha:",
         calculate: "Calcular",
         note:
           "Nota: Lo que se calcula es el momento en que no hay corriente a partir de las 21:30. Los datos provienen de la Port Authority de Chalkida. El cálculo no es una ciencia exacta y no garantiza que el Puente Viejo de Euripo abra a la hora indicada.",
@@ -481,7 +481,7 @@
         lede:
           "Check the slack-water moment to better plan your passage through the Old Euripus Bridge.",
         languageLabel: "Language",
-        dateLabel: "Enter the date (d/m/yyyy):",
+        dateLabel: "Enter the date:",
         calculate: "Calculate",
         note:
           "Note: The calculation determines the moment of no current starting from 21:30. Data is provided by the Port Authority of Chalcis. The calculation is not an exact science and does not guarantee the Old Euripus Bridge will open at the indicated time.",
@@ -526,7 +526,7 @@
         lede:
           "Δείτε τη στιγμή άπνοιας του ρεύματος για να προγραμματίσετε καλύτερα τη διέλευση από την Παλαιά Γέφυρα του Ευρίπου.",
         languageLabel: "Γλώσσα",
-        dateLabel: "Εισαγάγετε την ημερομηνία (η/μ/χχχχ):",
+        dateLabel: "Εισαγάγετε την ημερομηνία:",
         calculate: "Υπολογισμός",
         note:
           "Σημείωση: Ο υπολογισμός καθορίζει τη στιγμή που δεν υπάρχει ρεύμα από τις 21:30. Τα δεδομένα προέρχονται από την Λιμενική Αρχή Χαλκίδας. Ο υπολογισμός δεν είναι ακριβής επιστήμη και δεν εγγυάται ότι η Παλαιά Γέφυρα του Ευρίπου θα ανοίξει στην υποδεικνυόμενη ώρα.",
@@ -951,6 +951,16 @@
       if (urlLang && langData[urlLang]) {
         currentLang = urlLang;
       }
+
+      const dateInput = document.getElementById("dateInput");
+      dateInput.addEventListener("input", (e) => {
+        const prev = e.target.value;
+        const digits = prev.replace(/\D/g, "").slice(0, 8);
+        let masked = digits;
+        if (digits.length > 2) masked = digits.slice(0, 2) + "/" + digits.slice(2);
+        if (digits.length > 4) masked = digits.slice(0, 2) + "/" + digits.slice(2, 4) + "/" + digits.slice(4);
+        e.target.value = masked;
+      });
 
       form.addEventListener("submit", (event) => {
         event.preventDefault();
